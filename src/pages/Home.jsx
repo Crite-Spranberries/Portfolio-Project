@@ -17,7 +17,7 @@ function Home() {
           <div className="hero-cta">
             <div className="social-links">
               <a
-                href="https://github.com"
+                href="https://github.com/Crite-Spranberries"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon"
@@ -32,7 +32,7 @@ function Home() {
                 </svg>
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/samuel-b-chua/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon"
