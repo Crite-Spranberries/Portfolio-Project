@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import MailIcon from "../assets/vectors/mail-icon.svg";
-import LogoFlat from "../assets/vectors/Logo A Flat.svg";
+import LogoFlat from "../assets/vectors/logo-a-flat.svg";
 import "./Footer.css";
 
 function Footer() {

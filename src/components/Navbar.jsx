@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import logoFlat from "../assets/vectors/Logo A White.svg";
+import logoFlat from "../assets/vectors/logo-a-white.svg";
 import "./Navbar.css";
 
 const SECTION_IDS = ["home", "services", "portfolio", "about"];
