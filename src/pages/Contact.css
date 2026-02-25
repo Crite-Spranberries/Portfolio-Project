@@ -1,0 +1,27 @@
+/* Same blurred background as home / landing */
+.contact-page {
+  position: relative;
+  min-height: 60vh;
+  padding: calc(88px + var(--page-padding)) var(--page-padding) 4rem;
+  margin: calc(var(--page-padding) * -1);
+  box-sizing: border-box;
+  color: white;
+}
+
+/* Base image + gradient, then extra 0.6 black overlay to match landing contact max darken */
+.contact-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(135deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.6) 100%),
+    linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(50, 50, 50, 0.7) 100%),
+    url("/src/assets/img/Van_ExpoBuilding.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(4px);
+  transform: scale(1.02);
+}
+

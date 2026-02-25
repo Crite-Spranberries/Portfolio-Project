@@ -1,12 +1,164 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import ScrollDownIcon from "../assets/vectors/scrolldown-icon.svg";
+import MailIcon from "../assets/vectors/mail-icon.svg";
+import MonkeyImg from "../assets/img/monkey.png";
 import "./Home.css";
 
-function Home() {
+const HERO_LINE_1 = "Nice to meet you.";
+const HERO_LINE_2 = "I'm Sam.";
+const HERO_HEADING = `${HERO_LINE_1} ${HERO_LINE_2}`;
+const SHOW_PROFILE_IMAGE = false;
+
+function Home({ startTyping = true }) {
+  const location = useLocation();
+  const [headingText, setHeadingText] = useState("");
+  const [showScrollIndicator, setShowScrollIndicator] = useState(false);
+  const [scrollDarken, setScrollDarken] = useState(0);
+
+  useEffect(() => {
+    if (!location.hash || location.hash === "#") {
+      window.scrollTo(0, 0);
+    }
+  }, []);
+
+  useEffect(() => {
+    const hash = location.hash;
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [location.pathname, location.hash]);
+
+  useEffect(() => {
+    if (!startTyping) {
+      return;
+    }
+
+    // Reset text when we begin a new typing sequence
+    setHeadingText("");
+
+    const text = HERO_HEADING;
+    const firstSentenceEnd = text.indexOf(".") + 1;
+
+    let accumulatedDelay = 160;
+    const timeouts = [];
+
+    for (let i = 0; i < text.length; i++) {
+      const char = text[i];
+      let delay;
+
+      if (i === firstSentenceEnd) {
+        // Slight pause before the "I'm Samuel." part
+        delay = 420;
+      } else if (char === " ") {
+        // Very quick skip over spaces
+        delay = 26;
+      } else {
+        // Vary timings slightly to feel more human
+        delay = 40 + Math.random() * 40;
+      }
+
+      accumulatedDelay += delay;
+      const sliceEnd = i + 1;
+
+      timeouts.push(
+        window.setTimeout(() => {
+          setHeadingText(text.slice(0, sliceEnd));
+        }, accumulatedDelay),
+      );
+    }
+
+    return () => {
+      timeouts.forEach(clearTimeout);
+    };
+  }, [startTyping]);
+
+  useEffect(() => {
+    if (!startTyping) {
+      return;
+    }
+
+    let idleTimeout;
+
+    const isAtBottom = () => {
+      const scrollPosition = window.innerHeight + window.scrollY;
+      const threshold = 8; // px tolerance
+      return scrollPosition >= document.body.offsetHeight - threshold;
+    };
+
+    const resetIdleTimer = () => {
+      // If we're already at the bottom, never show the indicator
+      if (isAtBottom()) {
+        setShowScrollIndicator(false);
+        if (idleTimeout) {
+          window.clearTimeout(idleTimeout);
+        }
+        return;
+      }
+
+      setShowScrollIndicator(false);
+      if (idleTimeout) {
+        window.clearTimeout(idleTimeout);
+      }
+      idleTimeout = window.setTimeout(() => {
+        // Only show if user is still not at the bottom
+        if (!isAtBottom()) {
+          setShowScrollIndicator(true);
+        }
+      }, 8000);
+    };
+
+    const handleScroll = () => {
+      resetIdleTimer();
+    };
+
+    resetIdleTimer();
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      if (idleTimeout) {
+        window.clearTimeout(idleTimeout);
+      }
+    };
+  }, [startTyping]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const services = document.getElementById("services");
+      if (!services) return;
+      const rect = services.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const servicesTop = rect.top;
+      const progress = Math.max(
+        0,
+        Math.min(1, 1 - servicesTop / (viewportHeight * 0.8)),
+      );
+      setScrollDarken(progress * 0.6);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className="home">
-      <section className="hero">
+      <div
+        className="home-scroll-overlay"
+        style={{ opacity: scrollDarken }}
+        aria-hidden
+      />
+      <section id="home" className="hero">
         <div className="hero-content">
-          <h1>Nice to meet you. I'm Samuel.</h1>
+          <h1
+            className="hero-heading"
+            aria-label="Nice to meet you. I'm Samuel."
+          >
+            <span className="hero-heading-text">{headingText}</span>
+          </h1>
           <p>
             A front-end developer and website designer based in Surrey, B.C. My
             interests and specialties are in creating responsive and dynamic web
@@ -46,31 +198,90 @@ function Home() {
                   <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
                 </svg>
               </a>
+              <a
+                href="mailto:s22bchua@gmail.com"
+                className="social-icon"
+                aria-label="Email Samuel"
+              >
+                <img src={MailIcon} alt="" width={32} height={32} />
+              </a>
             </div>
-            <button className="cta-button">Recent Projects</button>
+            <Link to="/#portfolio" className="cta-button">
+              Recent Projects
+            </Link>
           </div>
         </div>
-        <div className="hero-image">
+        {SHOW_PROFILE_IMAGE && (
+          <div className="hero-image">
+            <img
+              src="/src/assets/img/placeholder.jpg"
+              alt="Samuel's Profile"
+              className="profile-image"
+            />
+          </div>
+        )}
+      </section>
+
+      <section id="services" className="home-section home-section--services">
+        <div className="home-section__content">
+          <hr className="home-section-divider" aria-hidden />
+          <h2 className="home-section__title">Services</h2>
+          <p className="home-section__text">
+            My code monkey is constructing the "Services" section.. Stay tuned!
+          </p>
           <img
-            src="/src/assets/img/placeholder.jpg"
-            alt="Samuel's Profile"
-            className="profile-image"
+            src={MonkeyImg}
+            alt=""
+            className="home-section-monkey"
+            aria-hidden
           />
         </div>
       </section>
 
-      <div className="scroll-indicator">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-        >
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
+      <section id="portfolio" className="home-section home-section--portfolio">
+        <div className="home-section__content">
+          <hr className="home-section-divider" aria-hidden />
+          <h2 className="home-section__title">Portfolio</h2>
+          <p className="home-section__text">
+            My code monkey is constructing the "Portfolio" section.. Stay tuned!
+          </p>
+          <img
+            src={MonkeyImg}
+            alt=""
+            className="home-section-monkey"
+            aria-hidden
+          />
+        </div>
+      </section>
+
+      <section id="about" className="home-section home-section--about">
+        <div className="home-section__content">
+          <hr className="home-section-divider" aria-hidden />
+          <h2 className="home-section__title">About</h2>
+          <p className="home-section__text">
+            My code monkey is constructing the "About" section.. Stay tuned!
+          </p>
+          <img
+            src={MonkeyImg}
+            alt=""
+            className="home-section-monkey"
+            aria-hidden
+          />
+        </div>
+      </section>
+
+      <div
+        className={`scroll-indicator ${
+          showScrollIndicator ? "scroll-indicator--visible" : ""
+        }`}
+        aria-hidden={!showScrollIndicator}
+      >
         <p>Scroll down for more</p>
+        <img
+          src={ScrollDownIcon}
+          alt="Scroll down arrow"
+          className="scroll-indicator-icon"
+        />
       </div>
     </div>
   );

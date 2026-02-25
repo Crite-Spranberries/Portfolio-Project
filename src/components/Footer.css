@@ -1,0 +1,140 @@
+.footer {
+  position: relative;
+  z-index: 10;
+  margin-top: 4rem;
+  padding: 3rem 0 2.5rem;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.95) 0%,
+    rgba(0, 0, 0, 0.92) 40%,
+    rgba(0, 0, 0, 0.8) 65%,
+    transparent 100%
+  );
+  color: #f3f3f3;
+  /* Extend footer background edge-to-edge, ignoring root padding */
+  margin-left: calc(-1 * var(--page-padding));
+  margin-right: calc(-1 * var(--page-padding));
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--page-padding);
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), 1fr);
+  column-gap: var(--grid-gutter);
+  row-gap: 2rem;
+}
+
+.footer-columns {
+  grid-column: 2 / 12;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  column-gap: 2.5rem;
+}
+
+.footer-column {
+  font-size: 0.9rem;
+}
+
+.footer-heading {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  margin-bottom: 0.75rem;
+  font-weight: var(--font-weight-semibold);
+}
+
+.footer-text {
+  margin: 0;
+  color: #d0d0d0;
+  line-height: 1.5;
+}
+
+.footer-socials {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-column-contact {
+  text-align: right;
+}
+
+.footer-column-contact a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.footer-bottom {
+  grid-column: 2 / 12;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  color: #b0b0b0;
+}
+
+.footer-copy-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-bottom-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.footer-bottom-logo img {
+  height: 4rem;
+  width: auto;
+  opacity: 0.12;
+}
+
+.footer-copy-wrap .footer-copy {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+}
+
+.footer-links a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    margin-top: 4rem;
+    padding: 2.5rem 0 2rem;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-columns {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    row-gap: 1.5rem;
+  }
+
+  .footer-column-contact {
+    text-align: left;
+  }
+
+  .footer-bottom {
+    grid-column: 1 / -1;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
