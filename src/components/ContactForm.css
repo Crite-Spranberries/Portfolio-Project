@@ -106,7 +106,9 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
   box-sizing: border-box;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease;
 }
 
 .contact-form-input::placeholder {
@@ -145,7 +147,10 @@
   border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .contact-form-submit:hover {
@@ -178,6 +183,23 @@
   opacity: 0.7;
   cursor: not-allowed;
   transform: none;
+}
+
+.contact-form-fallback {
+  margin: 0.75rem 0 0;
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-light);
+  color: #d0d0d0;
+  line-height: 1.4;
+}
+
+.contact-form-fallback a {
+  color: #e8a0a0;
+  text-decoration: underline;
+}
+
+.contact-form-fallback a:hover {
+  color: #f0b0b0;
 }
 
 .contact-form-result {
