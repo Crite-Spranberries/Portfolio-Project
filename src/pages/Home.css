@@ -1,39 +1,81 @@
+/* Home: stacking frames; each frame uses the same 12-col grid for consistent layout as you scroll */
 .home {
   grid-column: 1 / -1;
   grid-row: 2 / -1;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  grid-template-rows: repeat(10, 1fr);
-  gap: 16px;
-  background:
-    linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(50, 50, 50, 0.7) 100%),
-    url("/src/assets/img/background.jpg");
-  background-size: cover;
-  background-position: center;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
   color: white;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
+  margin: calc(var(--page-padding) * -1);
+  padding: 0;
 }
 
+.home::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(50, 50, 50, 0.7) 100%),
+    url("/src/assets/img/Van_ExpoBuilding.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(4px);
+  transform: scale(1.02);
+}
+
+.home-scroll-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: #000;
+  pointer-events: none;
+  transition: opacity 0.15s ease-out;
+}
+
+.home > .hero,
+.home > .home-section,
+.home > hr {
+  position: relative;
+  z-index: 1;
+}
+
+/* First frame: one viewport, grid aligns to the fold */
 .hero {
-  grid-column: 1 / -1;
-  grid-row: 1 / 9;
+  min-height: calc(100vh - 88px);
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(var(--grid-columns), 1fr);
+  gap: var(--grid-gutter);
   align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  padding: calc(88px + var(--page-padding)) var(--page-padding) calc(var(--page-padding) + 3rem);
+  box-sizing: border-box;
 }
 
 .hero-content {
-  grid-column: 1 / 7;
-  padding: 2rem;
-  max-width: 600px;
+  grid-column: 2 / 7;
+  padding: 2.5rem 2rem 2.5rem 0;
+  max-width: 560px;
+  margin-top: 5vh;
 }
 
-.hero-content h1 {
-  font-size: 3.5rem;
-  font-weight: 700;
+.hero-heading {
+  font-size: 60px;
+  font-weight: 800;
   margin-bottom: 1.5rem;
-  line-height: 1.2;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  display: inline-flex;
+  align-items: center;
+}
+
+.hero-heading-text {
+  white-space: pre-line;
 }
 
 .hero-content p {
@@ -42,12 +84,25 @@
   margin-bottom: 2.5rem;
   color: #d0d0d0;
   max-width: 500px;
+  animation: fadeIn 600ms ease 2.85s forwards;
+  opacity: 0;
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .hero-cta {
   display: flex;
   align-items: center;
   gap: 2rem;
+  animation: fadeIn 600ms ease 2.85s forwards;
+  opacity: 0;
 }
 
 .social-links {
@@ -92,11 +147,13 @@
 }
 
 .hero-image {
-  grid-column: 7 / -1;
+  grid-column: 7 / 12;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 2.5rem 0 2.5rem 2rem;
+  animation: fadeIn 600ms ease 2.85s forwards;
+  opacity: 0;
 }
 
 .image-placeholder {
@@ -134,26 +191,92 @@
   text-align: center;
 }
 
+/* Repeating frames: same 12-col grid so layout stays consistent as you scroll */
+.home-section {
+  min-height: 92vh;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), 1fr);
+  gap: var(--grid-gutter);
+  align-items: center;
+  padding: calc(88px + var(--page-padding)) var(--page-padding);
+  /* Offset so section title (h2) sits just under navbar when scrolled to */
+  scroll-margin-top: calc(-1 * (88px + var(--page-padding)) + 88px);
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.home-section-divider {
+  border: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  margin: 0 auto 1rem;
+  max-width: 1200px;
+  width: 100%;
+}
+
+.home-section__content {
+  grid-column: 2 / 12;
+  text-align: center;
+  justify-self: center;
+  width: 100%;
+  max-width: 36em;
+}
+
+.home-section .home-section__title {
+  font-size: 56px;
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-display);
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.02em;
+}
+
+.home-section .home-section__text {
+  color: #d0d0d0;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.home-section-monkey {
+  display: block;
+  margin: 0.75rem auto 0;
+  max-height: 64px;
+  width: auto;
+}
+
 .scroll-indicator {
-  grid-column: 1 / -1;
-  grid-row: 9 / 11;
+  position: fixed;
+  bottom: 2rem;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 2rem;
   color: #999;
-  animation: bounce 2s infinite;
+  opacity: 0;
+  z-index: 50;
+  transition: opacity 400ms ease;
 }
 
-.scroll-indicator svg {
-  color: #666;
+.scroll-indicator--visible {
+  opacity: 1;
+  animation: bounce 2s infinite 0.6s;
+}
+
+.scroll-indicator-icon {
+  width: 26px;
+  height: 15px;
+  opacity: 0.5;
+  display: block;
+  margin: 0 auto;
 }
 
 .scroll-indicator p {
   margin: 0;
   font-size: 0.9rem;
+  text-align: center;
 }
 
 @keyframes bounce {
@@ -171,14 +294,23 @@
   .hero {
     grid-template-columns: repeat(12, 1fr);
     gap: 8px;
+    padding: calc(88px + var(--page-padding)) var(--page-padding) 2rem;
   }
 
   .hero-content {
     grid-column: 1 / -1;
-    padding: 1rem;
+    padding: 1rem 0;
   }
 
-  .hero-content h1 {
+  .home-section {
+    padding: 2rem var(--page-padding);
+  }
+
+  .home-section__content {
+    grid-column: 1 / -1;
+  }
+
+  .hero-heading {
     font-size: 2.5rem;
   }
 

@@ -1,0 +1,61 @@
+.not-found {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: calc(88px + var(--page-padding)) var(--page-padding) 4rem;
+  margin: calc(var(--page-padding) * -1);
+  box-sizing: border-box;
+  color: white;
+  text-align: center;
+}
+
+.not-found::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(135deg, rgba(0, 0, 0, 0.85) 0%, rgba(40, 40, 40, 0.8) 100%),
+    url("/src/assets/img/Van_ExpoBuilding.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(4px);
+  transform: scale(1.02);
+}
+
+.not-found__title {
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: var(--font-weight-display);
+  letter-spacing: 0.02em;
+  margin: 0 0 0.5rem;
+  line-height: 1;
+}
+
+.not-found__text {
+  font-size: 1.15rem;
+  color: #d0d0d0;
+  margin: 0 0 1.5rem;
+  font-weight: var(--font-weight-light);
+}
+
+.not-found__link {
+  display: inline-block;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: var(--font-weight-medium);
+  color: white;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.not-found__link:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.4);
+}

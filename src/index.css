@@ -1,7 +1,48 @@
+@font-face {
+  font-family: "Epilogue";
+  src: url("/src/assets/fonts/Epilogue-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Epilogue";
+  src: url("/src/assets/fonts/Epilogue-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Epilogue";
+  src: url("/src/assets/fonts/Epilogue-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Epilogue";
+  src: url("/src/assets/fonts/Epilogue-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Epilogue";
+  src: url("/src/assets/fonts/Epilogue-ExtraBold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu",
-    "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    "Epilogue", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+    "Helvetica Neue", sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -11,20 +52,55 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Layout tokens */
+  --grid-columns: 12;
+  --grid-rows: 10;
+  --grid-gutter: 16px;
+  --page-padding: 16px;
+
+  /* Typography tokens */
+  --font-family-base: "Epilogue", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-display: 800;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 160px;
 }
 
 body {
   margin: 0;
   min-width: 320px;
+  min-height: 100vh;
   background-color: #1a1a1a;
-  overflow: hidden;
-  height: 100vh;
+  color: rgba(255, 255, 255, 0.87);
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-light);
+  overflow-x: hidden;
 }
 
 #root {
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-family-base);
+  font-weight: var(--font-weight-display);
+  letter-spacing: 0.02em;
+}
+
+h2 {
+  font-size: calc(2.5rem - 4px);
 }
 
 a {
