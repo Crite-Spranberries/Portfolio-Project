@@ -8,6 +8,16 @@ const SECTION_IDS = ["home", "services", "portfolio", "about"];
 function Navbar() {
   const { pathname } = useLocation();
   const [activeSection, setActiveSection] = useState("home");
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [menuOpen]);
 
   useEffect(() => {
     if (pathname !== "/") {
@@ -32,6 +42,54 @@ function Navbar() {
     return () => window.removeEventListener("scroll", getActive);
   }, [pathname]);
 
+  const closeMenu = () => setMenuOpen(false);
+
+  const navLinks = (
+    <>
+      <li>
+        <Link to="/" className={activeSection === "home" ? "active" : ""} onClick={closeMenu}>
+          Home
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/#services"
+          className={activeSection === "services" ? "active" : ""}
+          onClick={closeMenu}
+        >
+          Services
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/#portfolio"
+          className={activeSection === "portfolio" ? "active" : ""}
+          onClick={closeMenu}
+        >
+          Portfolio
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/#about"
+          className={activeSection === "about" ? "active" : ""}
+          onClick={closeMenu}
+        >
+          About
+        </Link>
+      </li>
+      <li>
+        <Link
+          to="/contact"
+          className={activeSection === "contact" ? "active" : ""}
+          onClick={closeMenu}
+        >
+          Contact
+        </Link>
+      </li>
+    </>
+  );
+
   return (
     <nav className="navbar">
       <div className="navbar-logo">
@@ -39,45 +97,34 @@ function Navbar() {
           <img src={logoFlat} alt="Logo" />
         </Link>
       </div>
-      <ul className="navbar-menu">
-        <li>
-          <Link to="/" className={activeSection === "home" ? "active" : ""}>
-            Home
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/#services"
-            className={activeSection === "services" ? "active" : ""}
-          >
-            Services
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/#portfolio"
-            className={activeSection === "portfolio" ? "active" : ""}
-          >
-            Portfolio
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/#about"
-            className={activeSection === "about" ? "active" : ""}
-          >
-            About
-          </Link>
-        </li>
-        <li>
-          <Link
-            to="/contact"
-            className={activeSection === "contact" ? "active" : ""}
-          >
-            Contact
-          </Link>
-        </li>
-      </ul>
+      <button
+        type="button"
+        className="navbar-hamburger"
+        aria-expanded={menuOpen}
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
+        onClick={() => setMenuOpen((o) => !o)}
+      >
+        <span className="navbar-hamburger-line" />
+        <span className="navbar-hamburger-line" />
+        <span className="navbar-hamburger-line" />
+      </button>
+      <ul className="navbar-menu">{navLinks}</ul>
+      <div
+        className={`navbar-overlay ${menuOpen ? "navbar-overlay--open" : ""}`}
+        aria-hidden="true"
+        onClick={closeMenu}
+      />
+      <div className={`navbar-drawer ${menuOpen ? "navbar-drawer--open" : ""}`}>
+        <button
+          type="button"
+          className="navbar-drawer-close"
+          aria-label="Close menu"
+          onClick={closeMenu}
+        >
+          <span aria-hidden>×</span>
+        </button>
+        <ul className="navbar-drawer-menu">{navLinks}</ul>
+      </div>
     </nav>
   );
 }
