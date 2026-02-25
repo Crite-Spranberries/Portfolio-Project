@@ -3,7 +3,10 @@ import MailIcon from "../assets/vectors/mail-icon.svg";
 import "./ContactForm.css";
 
 const CONTACT_EMAIL = "s22bchua@gmail.com";
-const WEB3FORMS_ACCESS_KEY = "da987a2d-0541-41b8-9f86-e8b4d133edf6";
+// Default key used when accessKey prop is not provided (e.g. single form site)
+const DEFAULT_ACCESS_KEY =
+  import.meta.env.VITE_WEB3FORMS_ACCESS_KEY ||
+  "da987a2d-0541-41b8-9f86-e8b4d133edf6";
 
 const CONTACT_INTRO = {
   paragraph1:
@@ -12,9 +15,15 @@ const CONTACT_INTRO = {
     "For anything from a quick question to a full site redesign, send a message and I'll get back to you. I'm typically active from Mon.-Fri., 9:00AM – 5:00PM PT.",
 };
 
-function ContactForm({ idPrefix = "contact", onSubmit, headingLevel = "h2" }) {
+function ContactForm({
+  idPrefix = "contact",
+  onSubmit,
+  headingLevel = "h2",
+  accessKey,
+}) {
   const [result, setResult] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const web3Key = accessKey ?? DEFAULT_ACCESS_KEY;
 
   const handleSubmit = async (e) => {
     if (onSubmit) {
@@ -26,17 +35,31 @@ function ContactForm({ idPrefix = "contact", onSubmit, headingLevel = "h2" }) {
     setResult(null);
     try {
       const formData = new FormData(e.target);
-      formData.append("access_key", WEB3FORMS_ACCESS_KEY);
+      formData.append("access_key", web3Key);
 
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         body: formData,
       });
 
-      const data = await response.json();
-      setResult(data.success ? "success" : "error");
+      const raw = await response.text();
+      let data;
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        console.warn("[ContactForm] Response was not JSON. Status:", response.status, "Body:", raw?.slice(0, 200));
+        setResult("error");
+        return;
+      }
+
+      if (data.success) {
+        setResult("success");
+      } else {
+        setResult("error");
+        console.warn("[ContactForm] Web3Forms error:", data.body?.message ?? data.message ?? data.error ?? data);
+      }
     } catch (err) {
-      // e.g. ERR_CONNECTION_REFUSED: network/firewall blocking api.web3forms.com
+      console.warn("[ContactForm] Network or request failed:", err.message ?? err);
       setResult("error");
     } finally {
       setIsSubmitting(false);

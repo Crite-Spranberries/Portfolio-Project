@@ -132,7 +132,11 @@ function Landing() {
       <hr className="landing-divider" />
 
       <section id="contact" className="landing-contact">
-        <ContactForm idPrefix="contact" headingLevel="h2" />
+        <ContactForm
+          idPrefix="contact"
+          headingLevel="h2"
+          accessKey={import.meta.env.VITE_WEB3FORMS_ACCESS_KEY_LANDING}
+        />
       </section>
     </div>
   );
