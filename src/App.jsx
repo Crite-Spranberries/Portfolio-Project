@@ -38,8 +38,17 @@ function ScrollToTop() {
         return;
       }
     }
-    window.scrollTo(0, 0);
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   }, [pathname, hash]);
+  return null;
+}
+
+function ScrollRestoration() {
+  useEffect(() => {
+    if (typeof window.history.scrollRestoration === "string") {
+      window.history.scrollRestoration = "manual";
+    }
+  }, []);
   return null;
 }
 
@@ -54,6 +63,7 @@ function App() {
 
   return (
     <Router>
+      <ScrollRestoration />
       <ScrollToTop />
       {showSplash && <div className="splash" aria-hidden="true" />}
 

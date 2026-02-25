@@ -13,6 +13,7 @@ const SHOW_PROFILE_IMAGE = false;
 function Home({ startTyping = true }) {
   const location = useLocation();
   const [headingText, setHeadingText] = useState("");
+  const [showContentAfterTyping, setShowContentAfterTyping] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [scrollDarken, setScrollDarken] = useState(0);
 
@@ -37,28 +38,31 @@ function Home({ startTyping = true }) {
       return;
     }
 
-    // Reset text when we begin a new typing sequence
     setHeadingText("");
+    setShowContentAfterTyping(false);
 
     const text = HERO_HEADING;
     const firstSentenceEnd = text.indexOf(".") + 1;
+    const len = text.length;
 
-    let accumulatedDelay = 160;
+    // Ease-out: fast at first, then slower toward the end
+    const easeOut = (progress) => 0.5 + 1.6 * progress;
+
+    let accumulatedDelay = 120;
     const timeouts = [];
 
-    for (let i = 0; i < text.length; i++) {
+    for (let i = 0; i < len; i++) {
       const char = text[i];
       let delay;
 
       if (i === firstSentenceEnd) {
-        // Slight pause before the "I'm Samuel." part
-        delay = 420;
+        delay = 320;
       } else if (char === " ") {
-        // Very quick skip over spaces
-        delay = 26;
+        delay = 20;
       } else {
-        // Vary timings slightly to feel more human
-        delay = 40 + Math.random() * 40;
+        const progress = i / len;
+        const multiplier = Math.max(0.5, Math.min(2.1, easeOut(progress)));
+        delay = (22 + Math.random() * 28) * multiplier;
       }
 
       accumulatedDelay += delay;
@@ -70,6 +74,11 @@ function Home({ startTyping = true }) {
         }, accumulatedDelay),
       );
     }
+
+    // Show paragraph + CTA shortly after typing finishes
+    timeouts.push(
+      window.setTimeout(() => setShowContentAfterTyping(true), accumulatedDelay + 400),
+    );
 
     return () => {
       timeouts.forEach(clearTimeout);
@@ -151,8 +160,8 @@ function Home({ startTyping = true }) {
         style={{ opacity: scrollDarken }}
         aria-hidden
       />
-      <section id="home" className="hero">
-        <div className="hero-content">
+      <section id="home" className={`hero ${showContentAfterTyping ? "hero--reveal" : ""}`}>
+        <div className={`hero-content ${showContentAfterTyping ? "hero-content--reveal" : ""}`}>
           <h1
             className="hero-heading"
             aria-label="Nice to meet you. I'm Samuel."

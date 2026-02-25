@@ -84,8 +84,11 @@
   margin-bottom: 2.5rem;
   color: #d0d0d0;
   max-width: 500px;
-  animation: fadeIn 600ms ease 2.85s forwards;
   opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.hero-content--reveal p {
+  opacity: 1;
 }
 
 @keyframes fadeIn {
@@ -101,8 +104,11 @@
   display: flex;
   align-items: center;
   gap: 2rem;
-  animation: fadeIn 600ms ease 2.85s forwards;
   opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.hero-content.hero-content--reveal .hero-cta {
+  opacity: 1;
 }
 
 .social-links {
@@ -152,8 +158,11 @@
   align-items: center;
   justify-content: center;
   padding: 2.5rem 0 2.5rem 2rem;
-  animation: fadeIn 600ms ease 2.85s forwards;
   opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.hero--reveal .hero-image {
+  opacity: 1;
 }
 
 .image-placeholder {
