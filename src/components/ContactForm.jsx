@@ -3,7 +3,7 @@ import MailIcon from "../assets/vectors/mail-icon.svg";
 import "./ContactForm.css";
 
 const CONTACT_EMAIL = "s22bchua@gmail.com";
-const WEB3FORMS_ACCESS_KEY = "21f0e6b0-beb6-4965-bd5a-b2fff0140582";
+const WEB3FORMS_ACCESS_KEY = "da987a2d-0541-41b8-9f86-e8b4d133edf6";
 
 const CONTACT_INTRO = {
   paragraph1:
@@ -35,7 +35,8 @@ function ContactForm({ idPrefix = "contact", onSubmit, headingLevel = "h2" }) {
 
       const data = await response.json();
       setResult(data.success ? "success" : "error");
-    } catch {
+    } catch (err) {
+      // e.g. ERR_CONNECTION_REFUSED: network/firewall blocking api.web3forms.com
       setResult("error");
     } finally {
       setIsSubmitting(false);
@@ -48,7 +49,9 @@ function ContactForm({ idPrefix = "contact", onSubmit, headingLevel = "h2" }) {
     <div className="contact-form-section">
       <div className="contact-form-inner">
         <div className="contact-form-info">
-          <h1 className="contact-form-heading contact-form-heading--hero">Contact Me</h1>
+          <h1 className="contact-form-heading contact-form-heading--hero">
+            Contact Me
+          </h1>
           <HeadingTag className="contact-form-heading">
             Reach out anytime.
           </HeadingTag>
@@ -56,27 +59,14 @@ function ContactForm({ idPrefix = "contact", onSubmit, headingLevel = "h2" }) {
           <p className="contact-form-text">{CONTACT_INTRO.paragraph2}</p>
           <ul className="contact-form-details">
             <li>
-              <a
-                href={`mailto:${CONTACT_EMAIL}`}
-                className="contact-form-link"
-              >
-                <img
-                  src={MailIcon}
-                  alt=""
-                  width="20"
-                  height="20"
-                  aria-hidden
-                />
+              <a href={`mailto:${CONTACT_EMAIL}`} className="contact-form-link">
+                <img src={MailIcon} alt="" width="20" height="20" aria-hidden />
                 <span>{CONTACT_EMAIL}</span>
               </a>
             </li>
           </ul>
         </div>
-        <form
-          className="contact-form"
-          onSubmit={handleSubmit}
-          noValidate
-        >
+        <form className="contact-form" onSubmit={handleSubmit} noValidate>
           <label className="contact-form-label" htmlFor={`${idPrefix}-name`}>
             *Name
           </label>
@@ -144,11 +134,17 @@ function ContactForm({ idPrefix = "contact", onSubmit, headingLevel = "h2" }) {
             {isSubmitting
               ? "Sending…"
               : result === "success"
-              ? "Message sent"
-              : result === "error"
-              ? "Message failed"
-              : "Submit"}
+                ? "Message sent"
+                : result === "error"
+                  ? "Message failed"
+                  : "Submit"}
           </button>
+          {result === "error" && (
+            <p className="contact-form-fallback">
+              Connection failed (e.g. network or firewall). You can{" "}
+              <a href={`mailto:${CONTACT_EMAIL}`}>email directly</a> instead.
+            </p>
+          )}
         </form>
       </div>
     </div>
