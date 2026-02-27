@@ -6,7 +6,7 @@
   margin: calc(var(--page-padding) * -1);
   box-sizing: border-box;
   color: white;
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
   min-width: 0;
 }
