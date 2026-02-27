@@ -6,7 +6,7 @@
   padding: calc(88px + var(--page-padding)) var(--page-padding) 3rem;
   margin: calc(var(--page-padding) * -1);
   box-sizing: border-box;
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
   min-width: 0;
 }

@@ -1,6 +1,7 @@
 .footer {
   position: relative;
   z-index: 10;
+  width: 100%;
   margin-top: 4rem;
   padding: 3rem 0 2.5rem;
   background: linear-gradient(
@@ -11,9 +12,7 @@
     transparent 100%
   );
   color: #f3f3f3;
-  /* Extend footer background edge-to-edge, ignoring root padding */
-  margin-left: calc(-1 * var(--page-padding));
-  margin-right: calc(-1 * var(--page-padding));
+  box-sizing: border-box;
 }
 
 .footer-inner {

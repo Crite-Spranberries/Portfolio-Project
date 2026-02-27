@@ -11,7 +11,7 @@
   box-sizing: border-box;
   color: white;
   text-align: center;
-  overflow-x: hidden;
+  overflow-x: clip;
   max-width: 100%;
   min-width: 0;
 }
