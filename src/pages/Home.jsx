@@ -77,7 +77,10 @@ function Home({ startTyping = true }) {
 
     // Show paragraph + CTA shortly after typing finishes
     timeouts.push(
-      window.setTimeout(() => setShowContentAfterTyping(true), accumulatedDelay + 400),
+      window.setTimeout(
+        () => setShowContentAfterTyping(true),
+        accumulatedDelay + 400,
+      ),
     );
 
     return () => {
@@ -160,8 +163,13 @@ function Home({ startTyping = true }) {
         style={{ opacity: scrollDarken }}
         aria-hidden
       />
-      <section id="home" className={`hero ${showContentAfterTyping ? "hero--reveal" : ""}`}>
-        <div className={`hero-content ${showContentAfterTyping ? "hero-content--reveal" : ""}`}>
+      <section
+        id="home"
+        className={`hero ${showContentAfterTyping ? "hero--reveal" : ""}`}
+      >
+        <div
+          className={`hero-content ${showContentAfterTyping ? "hero-content--reveal" : ""}`}
+        >
           <h1
             className="hero-heading"
             aria-label="Nice to meet you. I'm Samuel."
@@ -266,7 +274,7 @@ function Home({ startTyping = true }) {
       <section id="about" className="home-section home-section--about">
         <div className="home-section__content">
           <hr className="home-section-divider" aria-hidden />
-          <h2 className="home-section__title">About</h2>
+          <h2 className="home-section__title">About Me</h2>
           <p className="home-section__text">
             My code monkey is constructing the "About" section.. Stay tuned!
           </p>
@@ -285,7 +293,14 @@ function Home({ startTyping = true }) {
         }`}
         aria-hidden={!showScrollIndicator}
       >
-        <p>Scroll down for more</p>
+        <p>
+          <span className="scroll-indicator-text scroll-indicator-text--desktop">
+            Scroll down for more
+          </span>
+          <span className="scroll-indicator-text scroll-indicator-text--mobile">
+            Swipe down for more
+          </span>
+        </p>
         <img
           src={ScrollDownIcon}
           alt="Scroll down arrow"

@@ -1,4 +1,4 @@
-/* Same blurred background as home */
+/* Same blurred background as home; base layout matches app-wide (no horizontal overflow) */
 .landing {
   position: relative;
   min-height: 100vh;
@@ -6,6 +6,9 @@
   padding: calc(88px + var(--page-padding)) var(--page-padding) 3rem;
   margin: calc(var(--page-padding) * -1);
   box-sizing: border-box;
+  overflow-x: hidden;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .landing::before {
@@ -20,7 +23,6 @@
   background-position: center;
   background-repeat: no-repeat;
   filter: blur(4px);
-  transform: scale(1.02);
 }
 
 .landing-scroll-overlay {

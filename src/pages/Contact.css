@@ -1,4 +1,4 @@
-/* Same blurred background as home / landing */
+/* Same blurred background as home / landing; base layout matches app-wide (no horizontal overflow) */
 .contact-page {
   position: relative;
   min-height: 60vh;
@@ -6,6 +6,9 @@
   margin: calc(var(--page-padding) * -1);
   box-sizing: border-box;
   color: white;
+  overflow-x: hidden;
+  max-width: 100%;
+  min-width: 0;
 }
 
 /* Base image + gradient, then extra 0.6 black overlay to match landing contact max darken */
@@ -22,6 +25,5 @@
   background-position: center;
   background-repeat: no-repeat;
   filter: blur(4px);
-  transform: scale(1.02);
 }
 
