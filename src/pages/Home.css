@@ -6,10 +6,12 @@
   flex-direction: column;
   min-height: 100vh;
   color: white;
-  overflow: visible;
+  overflow-x: hidden;
+  overflow-y: visible;
   position: relative;
   margin: calc(var(--page-padding) * -1);
   padding: 0;
+  max-width: 100%;
 }
 
 .home::before {
@@ -24,7 +26,7 @@
   background-position: center;
   background-repeat: no-repeat;
   filter: blur(4px);
-  transform: scale(1.02);
+  /* No scale(1.02) to avoid horizontal overflow on mobile */
 }
 
 .home-scroll-overlay {
@@ -286,6 +288,19 @@
   margin: 0;
   font-size: 0.9rem;
   text-align: center;
+}
+
+.scroll-indicator-text--mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .scroll-indicator-text--desktop {
+    display: none;
+  }
+  .scroll-indicator-text--mobile {
+    display: inline;
+  }
 }
 
 @keyframes bounce {
