@@ -276,14 +276,30 @@ function Home({ startTyping = true }) {
           <hr className="home-section-divider" aria-hidden />
           <h2 className="home-section__title">About Me</h2>
           <p className="home-section__text">
-            My code monkey is constructing the "About" section.. Stay tuned!
+            My code monkey is constructing the "About Me" section.. Stay tuned!
+            {/* Hi! I'm a Canadian front-end developer and website designer based in
+            Surrey, B.C. When I'm not making web experiences or little projects,
+            you might find me out on a nature walk checking out the local
+            scenery, or visiting a music bar. If you can't find me enjoying the
+            above, I'm probably enjoying a nap.. Otherwise, *seriously
+            speaking*, I like to play the electric bass, print, paint, and make
+            cosplay props, and play the occasional video game (I'm in a bit of a
+            Helldivers II phase at the moment).
+            <br></br>
+            <br></br>
+            Development ventures aside, I've been taking up Voice Acting as a
+            hobby since 2024. My latest V/O ventures can be explored{" "}
+            <Link to="/#voice-acting" className="home-here-link">
+              here
+            </Link>
+            . */}
+            <img
+              src={MonkeyImg}
+              alt=""
+              className="home-section-monkey"
+              aria-hidden
+            />
           </p>
-          <img
-            src={MonkeyImg}
-            alt=""
-            className="home-section-monkey"
-            aria-hidden
-          />
         </div>
       </section>
 

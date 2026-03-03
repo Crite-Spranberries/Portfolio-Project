@@ -248,6 +248,16 @@
   margin: 0;
 }
 
+.home-here-link {
+  color: #e6c547;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.home-here-link:hover {
+  color: #f0d878;
+}
+
 .home-section-monkey {
   display: block;
   margin: 0.75rem auto 0;

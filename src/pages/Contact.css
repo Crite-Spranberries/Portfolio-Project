@@ -1,7 +1,10 @@
 /* Same blurred background as home / landing; base layout matches app-wide (no horizontal overflow) */
 .contact-page {
   position: relative;
-  min-height: 60vh;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: calc(88px + var(--page-padding)) var(--page-padding) 4rem;
   margin: calc(var(--page-padding) * -1);
   box-sizing: border-box;

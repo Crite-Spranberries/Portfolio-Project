@@ -47,7 +47,12 @@ function ContactForm({
       try {
         data = JSON.parse(raw);
       } catch {
-        console.warn("[ContactForm] Response was not JSON. Status:", response.status, "Body:", raw?.slice(0, 200));
+        console.warn(
+          "[ContactForm] Response was not JSON. Status:",
+          response.status,
+          "Body:",
+          raw?.slice(0, 200),
+        );
         setResult("error");
         return;
       }
@@ -56,10 +61,16 @@ function ContactForm({
         setResult("success");
       } else {
         setResult("error");
-        console.warn("[ContactForm] Web3Forms error:", data.body?.message ?? data.message ?? data.error ?? data);
+        console.warn(
+          "[ContactForm] Web3Forms error:",
+          data.body?.message ?? data.message ?? data.error ?? data,
+        );
       }
     } catch (err) {
-      console.warn("[ContactForm] Network or request failed:", err.message ?? err);
+      console.warn(
+        "[ContactForm] Network or request failed:",
+        err.message ?? err,
+      );
       setResult("error");
     } finally {
       setIsSubmitting(false);
@@ -89,9 +100,12 @@ function ContactForm({
             </li>
           </ul>
         </div>
-        <form className="contact-form" onSubmit={handleSubmit} noValidate>
+        <form className="contact-form" onSubmit={handleSubmit}>
           <label className="contact-form-label" htmlFor={`${idPrefix}-name`}>
-            *Name
+            <span className="contact-form-required" aria-hidden="true">
+              *
+            </span>{" "}
+            Name
           </label>
           <input
             id={`${idPrefix}-name`}
@@ -102,7 +116,10 @@ function ContactForm({
             required
           />
           <label className="contact-form-label" htmlFor={`${idPrefix}-email`}>
-            *Email
+            <span className="contact-form-required" aria-hidden="true">
+              *
+            </span>{" "}
+            Email
           </label>
           <input
             id={`${idPrefix}-email`}
@@ -123,7 +140,10 @@ function ContactForm({
             className="contact-form-input"
           />
           <label className="contact-form-label" htmlFor={`${idPrefix}-topic`}>
-            *Select your topic
+            <span className="contact-form-required" aria-hidden="true">
+              *
+            </span>{" "}
+            Select your topic
           </label>
           <select
             id={`${idPrefix}-topic`}
@@ -137,7 +157,10 @@ function ContactForm({
             <option value="other">Other</option>
           </select>
           <label className="contact-form-label" htmlFor={`${idPrefix}-message`}>
-            *Message
+            <span className="contact-form-required" aria-hidden="true">
+              *
+            </span>{" "}
+            Message
           </label>
           <textarea
             id={`${idPrefix}-message`}
