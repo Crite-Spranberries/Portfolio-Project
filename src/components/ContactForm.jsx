@@ -86,9 +86,6 @@ function ContactForm({
           <h1 className="contact-form-heading contact-form-heading--hero">
             Contact Me
           </h1>
-          <HeadingTag className="contact-form-heading">
-            Reach out anytime.
-          </HeadingTag>
           <p className="contact-form-text">{CONTACT_INTRO.paragraph1}</p>
           <p className="contact-form-text">{CONTACT_INTRO.paragraph2}</p>
           <ul className="contact-form-details">
@@ -101,20 +98,42 @@ function ContactForm({
           </ul>
         </div>
         <form className="contact-form" onSubmit={handleSubmit}>
-          <label className="contact-form-label" htmlFor={`${idPrefix}-name`}>
-            <span className="contact-form-required" aria-hidden="true">
-              *
-            </span>{" "}
-            Name
-          </label>
-          <input
-            id={`${idPrefix}-name`}
-            type="text"
-            name="name"
-            placeholder="Name"
-            className="contact-form-input"
-            required
-          />
+          <div className="contact-form-row contact-form-row--name-phone">
+            <div className="contact-form-field">
+              <label
+                className="contact-form-label"
+                htmlFor={`${idPrefix}-name`}
+              >
+                <span className="contact-form-required" aria-hidden="true">
+                  *
+                </span>{" "}
+                Name
+              </label>
+              <input
+                id={`${idPrefix}-name`}
+                type="text"
+                name="name"
+                placeholder="Name"
+                className="contact-form-input"
+                required
+              />
+            </div>
+            <div className="contact-form-field">
+              <label
+                className="contact-form-label"
+                htmlFor={`${idPrefix}-phone`}
+              >
+                Phone Number (optional)
+              </label>
+              <input
+                id={`${idPrefix}-phone`}
+                type="tel"
+                name="phone"
+                placeholder="Phone Number (optional)"
+                className="contact-form-input"
+              />
+            </div>
+          </div>
           <label className="contact-form-label" htmlFor={`${idPrefix}-email`}>
             <span className="contact-form-required" aria-hidden="true">
               *
@@ -125,19 +144,9 @@ function ContactForm({
             id={`${idPrefix}-email`}
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder="Email@examplemail.com"
             className="contact-form-input"
             required
-          />
-          <label className="contact-form-label" htmlFor={`${idPrefix}-phone`}>
-            Phone Number (optional)
-          </label>
-          <input
-            id={`${idPrefix}-phone`}
-            type="tel"
-            name="phone"
-            placeholder="Phone Number (optional)"
-            className="contact-form-input"
           />
           <label className="contact-form-label" htmlFor={`${idPrefix}-topic`}>
             <span className="contact-form-required" aria-hidden="true">
@@ -165,7 +174,7 @@ function ContactForm({
           <textarea
             id={`${idPrefix}-message`}
             name="message"
-            placeholder="Message"
+            placeholder="Type message here..."
             className="contact-form-input contact-form-textarea"
             rows={4}
             required

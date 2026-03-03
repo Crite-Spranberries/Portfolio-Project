@@ -7,6 +7,7 @@ import Portfolio from "./pages/Portfolio";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Landing from "./pages/Landing";
+import Bebop from "./pages/Bebop";
 import NotFound from "./pages/NotFound";
 import "./App.css";
 import { useEffect, useState } from "react";
@@ -78,6 +79,7 @@ function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/landing" element={<Landing />} />
+            <Route path="/bebop" element={<Bebop />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
