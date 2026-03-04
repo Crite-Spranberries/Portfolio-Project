@@ -8,6 +8,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
+import PortfolioDetail from "./pages/PortfolioDetail";
 import "./App.css";
 import { useEffect, useState } from "react";
 
@@ -61,6 +62,41 @@ function App() {
     return () => clearTimeout(t);
   }, []);
 
+  useEffect(() => {
+    const handlePointerMove = (event) => {
+      const { innerWidth, innerHeight } = window;
+      if (!innerWidth || !innerHeight) return;
+
+      const normX = event.clientX / innerWidth - 0.5;
+      const normY = event.clientY / innerHeight - 0.5;
+
+      // Very subtle parallax, opposite to cursor
+      const maxShift = 10; // px; lower = gentler
+
+      const x = (-normX * 2 * maxShift).toFixed(2);
+      const y = (-normY * 2 * maxShift).toFixed(2);
+
+      document.documentElement.style.setProperty("--bg-shift-x", `${x}px`);
+      document.documentElement.style.setProperty("--bg-shift-y", `${y}px`);
+    };
+
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    return () => window.removeEventListener("pointermove", handlePointerMove);
+  }, []);
+
+  useEffect(() => {
+    if (!import.meta.env || !import.meta.env.DEV) return;
+
+    const handleKeyDown = (event) => {
+      if (event.key.toLowerCase() === "g") {
+        document.documentElement.classList.toggle("debug-grid");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <Router>
       <ScrollRestoration />
@@ -75,6 +111,7 @@ function App() {
             <Route path="/" element={<Home startTyping={!showSplash} />} />
             <Route path="/services" element={<Services />} />
             <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/portfolio/:projectId" element={<PortfolioDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/landing" element={<Landing />} />

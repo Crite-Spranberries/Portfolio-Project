@@ -1,9 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ScrollDownIcon from "../assets/vectors/scrolldown-icon.svg";
 import MailIcon from "../assets/vectors/mail-icon.svg";
 import MonkeyImg from "../assets/img/monkey.png";
+import {
+  PORTFOLIO_CATEGORIES,
+  PORTFOLIO_PROJECTS,
+  getCardCategoryLabels,
+} from "../data/portfolio";
+import PortfolioCardCategories from "../components/PortfolioCardCategories";
 import "./Home.css";
+import "./Portfolio.css";
 
 const HERO_LINE_1 = "Nice to meet you.";
 const HERO_LINE_2 = "I'm Sam.";
@@ -16,6 +23,33 @@ function Home({ startTyping = true }) {
   const [showContentAfterTyping, setShowContentAfterTyping] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [scrollDarken, setScrollDarken] = useState(0);
+  const [portfolioCategory, setPortfolioCategory] = useState("all");
+
+  const visiblePortfolioProjects = useMemo(() => {
+    const currentFilter = PORTFOLIO_CATEGORIES.find(
+      (category) => category.id === portfolioCategory,
+    );
+
+    if (!currentFilter || currentFilter.type === "all") {
+      return PORTFOLIO_PROJECTS;
+    }
+
+    if (currentFilter.type === "category") {
+      return PORTFOLIO_PROJECTS.filter(
+        (project) => project.category === currentFilter.id,
+      );
+    }
+
+    if (currentFilter.type === "tag" && currentFilter.tag) {
+      return PORTFOLIO_PROJECTS.filter(
+        (project) =>
+          Array.isArray(project.tags) &&
+          project.tags.includes(currentFilter.tag),
+      );
+    }
+
+    return PORTFOLIO_PROJECTS;
+  }, [portfolioCategory]);
 
   useEffect(() => {
     if (!location.hash || location.hash === "#") {
@@ -256,18 +290,72 @@ function Home({ startTyping = true }) {
       </section>
 
       <section id="portfolio" className="home-section home-section--portfolio">
-        <div className="home-section__content">
+        <div className="home-section__content home-section__content--portfolio">
           <hr className="home-section-divider" aria-hidden />
-          <h2 className="home-section__title">Portfolio</h2>
-          <p className="home-section__text">
-            My code monkey is constructing the "Portfolio" section.. Stay tuned!
-          </p>
-          <img
-            src={MonkeyImg}
-            alt=""
-            className="home-section-monkey"
-            aria-hidden
-          />
+
+          <section className="portfolio-shell">
+            <header className="portfolio-header">
+              <h2 className="portfolio-title">Portfolio</h2>
+            </header>
+
+            <div
+              className="portfolio-pills"
+              role="tablist"
+              aria-label="Filter portfolio projects by category"
+            >
+              {PORTFOLIO_CATEGORIES.map((category) => (
+                <button
+                  key={category.id}
+                  type="button"
+                  className={`portfolio-pill${
+                    portfolioCategory === category.id
+                      ? " portfolio-pill--active"
+                      : ""
+                  }`}
+                  onClick={() => setPortfolioCategory(category.id)}
+                  role="tab"
+                  aria-selected={portfolioCategory === category.id}
+                >
+                  {category.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="portfolio-grid">
+              {visiblePortfolioProjects.map((project) => {
+                const kindLabel =
+                  project.kind === "case-study" ? "Case study" : "Project";
+
+                return (
+                  <Link
+                    key={project.id}
+                    to={`/portfolio/${project.id}`}
+                    className="portfolio-card-link"
+                  >
+                    <article className="portfolio-card">
+                      <div className="portfolio-card-image-wrapper">
+                        <img
+                          src={project.image || MonkeyImg}
+                          alt=""
+                          className="portfolio-card-image"
+                          loading="lazy"
+                        />
+                      </div>
+                      <div className="portfolio-card-body">
+                        <h3 className="portfolio-card-title">
+                          {project.title}
+                        </h3>
+                        <p className="portfolio-card-kind">{kindLabel}</p>
+                        <PortfolioCardCategories
+                          labels={getCardCategoryLabels(project)}
+                        />
+                      </div>
+                    </article>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
         </div>
       </section>
 
