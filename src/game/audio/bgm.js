@@ -1,16 +1,18 @@
-// BGM via plain HTMLAudioElement (same approach that worked in your console test).
-// Use the exact path that worked: /src/assets/bebop/audio/music/space-lion-retro.mp3
-const getBgmUrl = () => {
-  if (typeof window === "undefined") return "";
-  return window.location.origin + "/src/assets/bebop/audio/music/space-lion-retro.mp3";
-};
+import { bebopAsset } from "../assets";
+
+// BGM via plain HTMLAudioElement; loaded only after user consent (keeps large file off initial load).
+const BGM_PATH = "audio/music/space-lion-retro.mp3";
+// Dev: literal path works with Vite's server. Prod: use resolved asset URL.
+const getBgmUrl = () =>
+  typeof window !== "undefined" && import.meta.env.DEV
+    ? window.location.origin + "/src/assets/bebop/" + BGM_PATH
+    : bebopAsset(BGM_PATH);
 
 let bgmAudio = null;
 
 const ensureAudioElement = () => {
   if (!bgmAudio) {
-    const url = getBgmUrl();
-    bgmAudio = new Audio(url);
+    bgmAudio = new Audio(getBgmUrl());
     bgmAudio.loop = true;
   }
   return bgmAudio;
