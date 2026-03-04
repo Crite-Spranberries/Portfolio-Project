@@ -28,6 +28,9 @@
   background-position: center;
   background-repeat: no-repeat;
   filter: blur(4px);
+  transform: translate3d(var(--bg-shift-x, 0px), var(--bg-shift-y, 0px), 0)
+    scale(1.03);
+  transition: transform 0.18s ease-out;
 }
 
 .not-found__title {
