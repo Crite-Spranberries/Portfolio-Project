@@ -164,10 +164,7 @@ export const PORTFOLIO_PROJECTS = [
     image: PlaceholderImg,
     detail: {
       role: "UI/UX Designer",
-      tools: [
-        { short: "Fi", label: "Figma" },
-        { short: "XD", label: "Adobe XD" },
-      ],
+      tools: [{ short: "Fi", label: "Figma" }],
       overview: {
         title: "Project Overview",
         text:
