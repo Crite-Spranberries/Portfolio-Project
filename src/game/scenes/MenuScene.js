@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { createTextButton } from "../ui/textButton";
 import { restartBgm, ensureBgmPlaying } from "../audio/bgm";
+import { beginGameSession } from "../session";
 
 // 3) Main menu scene: Start / Settings / Credits
 export default class MenuScene extends Phaser.Scene {
@@ -22,6 +23,9 @@ export default class MenuScene extends Phaser.Scene {
       .setOrigin(0.5);
 
     createTextButton(this, width / 2, height / 2 - 20, "Start", () => {
+      // Begin a new arcade-style run. Later we can hook score saving,
+      // difficulty, etc. off this session metadata.
+      beginGameSession(this);
       this.scene.start("Play");
     });
 

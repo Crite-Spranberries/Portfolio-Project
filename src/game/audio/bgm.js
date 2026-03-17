@@ -129,3 +129,20 @@ export const pauseRetroRush = () => {
   }
 };
 
+export const resumeRetroRush = (scene) => {
+  const audio = ensureRetroRushElement();
+
+  let volume = scene.registry.get("bgmVolume");
+  if (typeof volume !== "number") {
+    volume = 0.4;
+    scene.registry.set("bgmVolume", volume);
+  }
+
+  // Do not reset currentTime here; just continue from where it left off.
+  audio.volume = volume;
+  audio.muted = false;
+  if (audio.paused) {
+    audio.play().catch(() => {});
+  }
+};
+

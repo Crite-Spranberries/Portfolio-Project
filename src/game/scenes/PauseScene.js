@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { createTextButton } from "../ui/textButton";
 import { pauseRetroRush } from "../audio/bgm";
+import { endGameSession } from "../session";
 
 // Lightweight overlay scene shown on top of PlayScene when the user hits Pause.
 // While this scene is active, gameplay music is paused; the Countdown scene
@@ -53,6 +54,7 @@ export default class PauseScene extends Phaser.Scene {
       () => {
         this.registry.set("fromPlay", true);
         pauseRetroRush();
+        endGameSession(this);
         this.scene.stop("Play");
         this.scene.stop(); // stop Pause
         this.scene.start("Menu");

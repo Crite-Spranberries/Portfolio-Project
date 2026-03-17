@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { playRetroRush } from "../audio/bgm";
+import { playRetroRush, resumeRetroRush } from "../audio/bgm";
 
 // Simple 3-2-1-GO countdown overlay.
 // Usage:
@@ -47,13 +47,18 @@ export default class CountdownScene extends Phaser.Scene {
 
         if (index === steps.length - 1) {
           // After showing GO!, give a short moment then:
-          // - start gameplay music at the selected volume
+          // - start or resume gameplay music at the selected volume
           // - resume PlayScene if we came from Pause
           // - clear this overlay
           this.time.delayedCall(500, () => {
-            playRetroRush(this.scene.get("Play") || this);
+            const playScene = this.scene.get("Play") || this;
             if (this.fromPause) {
+              // Coming back from Pause: continue from previous playback position.
+              resumeRetroRush(playScene);
               this.scene.resume("Play");
+            } else {
+              // First time entering gameplay: start the Retro Rush track from the top.
+              playRetroRush(playScene);
             }
             this.scene.stop();
           });
