@@ -4,9 +4,11 @@ import SplashScene from "./scenes/SplashScene";
 import AudioConsentScene from "./scenes/AudioConsentScene";
 import MenuScene from "./scenes/MenuScene";
 import PlayScene from "./scenes/PlayScene";
+import PauseScene from "./scenes/PauseScene";
+import CountdownScene from "./scenes/CountdownScene";
 import SettingsScene from "./scenes/SettingsScene";
 import CreditsScene from "./scenes/CreditsScene";
-import { pauseBgm, resumeBgm } from "./audio/bgm";
+import { pauseBgm, pauseRetroRush } from "./audio/bgm";
 
 function BebopGame() {
   const containerRef = useRef(null);
@@ -25,7 +27,16 @@ function BebopGame() {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
       },
-      scene: [SplashScene, AudioConsentScene, MenuScene, PlayScene, SettingsScene, CreditsScene],
+      scene: [
+        SplashScene,
+        AudioConsentScene,
+        MenuScene,
+        PlayScene,
+        PauseScene,
+        CountdownScene,
+        SettingsScene,
+        CreditsScene,
+      ],
       physics: {
         default: "arcade",
         arcade: {
@@ -43,16 +54,16 @@ function BebopGame() {
     gameRef.current = game;
 
     // Keep audio scoped to the game viewport.
-    // - Clicking inside the game resumes background music (if it was playing before).
-    // - Clicking anywhere outside the game pauses the music.
+    // - Clicking anywhere outside the game viewport pauses the music.
+    // - Clicking inside the viewport does not change tracks; scenes control
+    //   which music should be playing (menu vs gameplay).
     const handlePointerDown = (event) => {
       const container = containerRef.current;
       if (!container) return;
 
-      if (container.contains(event.target)) {
-        resumeBgm();
-      } else {
+      if (!container.contains(event.target)) {
         pauseBgm();
+        pauseRetroRush();
       }
     };
 

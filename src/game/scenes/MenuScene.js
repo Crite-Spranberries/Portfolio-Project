@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { createTextButton } from "../ui/textButton";
-import { restartBgm } from "../audio/bgm";
+import { restartBgm, ensureBgmPlaying } from "../audio/bgm";
 
 // 3) Main menu scene: Start / Settings / Credits
 export default class MenuScene extends Phaser.Scene {
@@ -33,13 +33,20 @@ export default class MenuScene extends Phaser.Scene {
       this.scene.start("Credits");
     });
 
-    // When entering the menu, always restart the menu BGM from the beginning
-    // at the current volume level so navigation feels consistent.
+    // If we arrived here from the gameplay scene, restart the menu BGM
+    // from the beginning. For other menu pages (Settings, Credits, etc.),
+    // keep the current playback position and just ensure it's running.
+    const fromPlay = this.registry.get("fromPlay");
     try {
-      restartBgm(this);
+      if (fromPlay) {
+        restartBgm(this);
+      } else {
+        ensureBgmPlaying(this);
+      }
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Error starting BGM in MenuScene:", e);
     }
+    this.registry.set("fromPlay", false);
   }
 }

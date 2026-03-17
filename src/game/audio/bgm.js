@@ -46,6 +46,12 @@ export const ensureBgmPlaying = (scene) => {
   audio.volume = volume;
   audio.muted = false;
 
+  // Whenever we are (re)starting the menu BGM, make sure gameplay music
+  // is not still running in the background.
+  if (retroRushAudio) {
+    retroRushAudio.pause();
+  }
+
   // Call play() synchronously so it's inside the user gesture (required by browsers).
   if (audio.paused) {
     audio.play().catch(() => {});
@@ -95,6 +101,9 @@ export const restartBgm = (scene) => {
   audio.currentTime = 0;
   audio.volume = volume;
   audio.muted = false;
+  if (retroRushAudio) {
+    retroRushAudio.pause();
+  }
   audio.play().catch(() => {});
 };
 
