@@ -51,7 +51,7 @@ export default class CountdownScene extends Phaser.Scene {
           // - resume PlayScene if we came from Pause
           // - clear this overlay
           this.time.delayedCall(500, () => {
-            const playScene = this.scene.get("Play") || this;
+            const playScene = this.scene.get("Play");
             if (this.fromPause) {
               // Coming back from Pause: continue from previous playback position.
               resumeRetroRush(playScene);
@@ -59,6 +59,9 @@ export default class CountdownScene extends Phaser.Scene {
             } else {
               // First time entering gameplay: start the Retro Rush track from the top.
               playRetroRush(playScene);
+            }
+            if (playScene && typeof playScene.startRun === "function") {
+              playScene.startRun();
             }
             this.scene.stop();
           });

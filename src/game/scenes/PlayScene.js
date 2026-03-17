@@ -12,6 +12,49 @@ import { pauseBgm, playRetroRush, pauseRetroRush } from "../audio/bgm";
 export default class PlayScene extends Phaser.Scene {
   constructor() {
     super("Play");
+    this.player = null;
+    this.playerLastPos = null;
+    this.runActive = false;
+  }
+
+  startRun() {
+    const { width, height } = this.scale;
+
+    if (!this.player) {
+      // Simple triangle placeholder for the player ship.
+      this.player = this.add
+        .triangle(width / 2, height / 2, 0, -24, -18, 18, 18, 18, 0xffffff)
+        .setOrigin(0.5);
+
+      this.playerLastPos = new Phaser.Math.Vector2(this.player.x, this.player.y);
+
+      // Pointer movement controls: player follows the cursor and rotates so
+      // the triangle tip points in the direction of movement.
+      this.input.on("pointermove", (pointer) => {
+        if (!this.runActive || !this.player) return;
+
+        const x = Phaser.Math.Clamp(pointer.x, 0, width);
+        const y = Phaser.Math.Clamp(pointer.y, 0, height);
+
+        const last = this.playerLastPos || new Phaser.Math.Vector2(this.player.x, this.player.y);
+        const dx = x - last.x;
+        const dy = y - last.y;
+
+        if (dx !== 0 || dy !== 0) {
+          const angle = Phaser.Math.Angle.Between(last.x, last.y, x, y);
+          // Triangle is defined pointing up (-Y); rotate so the tip faces movement.
+          this.player.rotation = angle + Math.PI / 2;
+          this.playerLastPos.set(x, y);
+        }
+
+        this.player.setPosition(x, y);
+      });
+    } else {
+      this.player.setPosition(width / 2, height / 2);
+      this.playerLastPos.set(width / 2, height / 2);
+    }
+
+    this.runActive = true;
   }
 
   create() {
