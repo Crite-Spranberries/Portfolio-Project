@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { createTextButton } from "../ui/textButton";
+import { attachYellowCursor } from "../cursor";
 
 // 6) Credits scene — scrollable viewport
 export default class CreditsScene extends Phaser.Scene {
@@ -9,6 +10,8 @@ export default class CreditsScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale;
+
+    attachYellowCursor(this);
     const centerX = width / 2;
     const panelPadding = 20;
     const panelWidth = Math.min(width * 0.88, 520);

@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { ensureBgmPlaying, setBgmMuted, setBgmVolume } from "../audio/bgm";
 import { createTextButton } from "../ui/textButton";
+import { attachYellowCursor } from "../cursor";
 
 // 5) Settings scene
 export default class SettingsScene extends Phaser.Scene {
@@ -10,6 +11,8 @@ export default class SettingsScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale;
+
+    attachYellowCursor(this);
 
     this.add
       .text(width / 2, height / 4, "Settings", {

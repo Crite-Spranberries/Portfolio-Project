@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { ensureBgmPlaying, setBgmMuted } from "../audio/bgm";
 import { createTextButton } from "../ui/textButton";
+import { attachYellowCursor } from "../cursor";
 
 // 2) Audio permission scene: ask whether to enable sound
 export default class AudioConsentScene extends Phaser.Scene {
@@ -10,6 +11,8 @@ export default class AudioConsentScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale;
+
+    attachYellowCursor(this);
 
     this.add
       .rectangle(width / 2, height / 2, width * 0.9, height * 0.5, 0x000000, 0.85)

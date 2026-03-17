@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { createTextButton } from "../ui/textButton";
 import { restartBgm, ensureBgmPlaying } from "../audio/bgm";
 import { beginGameSession } from "../session";
+import { attachYellowCursor } from "../cursor";
 
 // 3) Main menu scene: Start / Settings / Credits
 export default class MenuScene extends Phaser.Scene {
@@ -11,6 +12,8 @@ export default class MenuScene extends Phaser.Scene {
 
   create() {
     const { width, height } = this.scale;
+
+    attachYellowCursor(this);
 
     this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
 

@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { attachYellowCursor } from "../cursor";
 
 // 1) Splash scene: handles loading and shows a progress bar
 export default class SplashScene extends Phaser.Scene {
@@ -74,6 +75,8 @@ export default class SplashScene extends Phaser.Scene {
     }
 
     const { width, height } = this.scale;
+
+    attachYellowCursor(this);
 
     // If any assets failed to load, surface a small warning list in the bottom-left
     if (this.failedFiles && this.failedFiles.length > 0) {

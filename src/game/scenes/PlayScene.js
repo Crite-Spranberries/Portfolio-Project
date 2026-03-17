@@ -1,6 +1,7 @@
 import Phaser from "phaser";
 import { createTextButton } from "../ui/textButton";
 import { pauseBgm, playRetroRush, pauseRetroRush } from "../audio/bgm";
+import { attachYellowCursor } from "../cursor";
 
 // 4) Placeholder play scene: where the actual game will live
 // When gameplay starts we:
@@ -15,6 +16,23 @@ export default class PlayScene extends Phaser.Scene {
     this.player = null;
     this.playerLastPos = null;
     this.runActive = false;
+    this.cursor = null;
+    this.cursorTarget = null;
+    this.playerLastRotation = 0;
+  }
+
+  handlePointerMove(pointer) {
+    const { width, height } = this.scale;
+
+    // cursor.js already keeps the yellow cursor in sync with the pointer.
+    // Here we just remember where the ship should be trying to move toward.
+    const x = Phaser.Math.Clamp(pointer.x, 0, width);
+    const y = Phaser.Math.Clamp(pointer.y, 0, height);
+    if (!this.cursorTarget) {
+      this.cursorTarget = new Phaser.Math.Vector2(x, y);
+    } else {
+      this.cursorTarget.set(x, y);
+    }
   }
 
   startRun() {
@@ -27,28 +45,6 @@ export default class PlayScene extends Phaser.Scene {
         .setOrigin(0.5);
 
       this.playerLastPos = new Phaser.Math.Vector2(this.player.x, this.player.y);
-
-      // Pointer movement controls: player follows the cursor and rotates so
-      // the triangle tip points in the direction of movement.
-      this.input.on("pointermove", (pointer) => {
-        if (!this.runActive || !this.player) return;
-
-        const x = Phaser.Math.Clamp(pointer.x, 0, width);
-        const y = Phaser.Math.Clamp(pointer.y, 0, height);
-
-        const last = this.playerLastPos || new Phaser.Math.Vector2(this.player.x, this.player.y);
-        const dx = x - last.x;
-        const dy = y - last.y;
-
-        if (dx !== 0 || dy !== 0) {
-          const angle = Phaser.Math.Angle.Between(last.x, last.y, x, y);
-          // Triangle is defined pointing up (-Y); rotate so the tip faces movement.
-          this.player.rotation = angle + Math.PI / 2;
-          this.playerLastPos.set(x, y);
-        }
-
-        this.player.setPosition(x, y);
-      });
     } else {
       this.player.setPosition(width / 2, height / 2);
       this.playerLastPos.set(width / 2, height / 2);
@@ -63,6 +59,11 @@ export default class PlayScene extends Phaser.Scene {
     // Swap away from menu music; actual gameplay track starts
     // after the 3-2-1-GO countdown completes.
     pauseBgm();
+
+    // Attach shared yellow cursor used across all scenes.
+    this.cursor = attachYellowCursor(this);
+    this.cursorTarget = new Phaser.Math.Vector2(width / 2, height / 2);
+    this.input.on("pointermove", this.handlePointerMove, this);
 
     // Pause button at the top center of the viewport.
     createTextButton(
@@ -108,8 +109,35 @@ export default class PlayScene extends Phaser.Scene {
       .setOrigin(1, 1);
 
     // When entering gameplay, show a 3-2-1-GO countdown overlay before
-    // the player starts interacting.
+    // the player and ship start interacting.
     this.scene.launch("Countdown");
+  }
+
+  update(time, delta) {
+    if (!this.runActive || !this.player || !this.cursorTarget) return;
+
+    const prevX = this.player.x;
+    const prevY = this.player.y;
+
+    // Smoothly slide toward the cursor target so it feels a bit physics-based.
+    const lerpFactor = 0.12 * (delta / 16.67);
+    const nx = Phaser.Math.Linear(prevX, this.cursorTarget.x, Phaser.Math.Clamp(lerpFactor, 0, 1));
+    const ny = Phaser.Math.Linear(prevY, this.cursorTarget.y, Phaser.Math.Clamp(lerpFactor, 0, 1));
+
+    this.player.setPosition(nx, ny);
+
+    const dx = nx - prevX;
+    const dy = ny - prevY;
+    if (dx !== 0 || dy !== 0) {
+      const angle = Phaser.Math.Angle.Between(prevX, prevY, nx, ny);
+      this.player.rotation = angle + Math.PI / 2;
+      this.playerLastRotation = this.player.rotation;
+      if (this.playerLastPos) {
+        this.playerLastPos.set(nx, ny);
+      }
+    } else if (this.playerLastRotation !== undefined) {
+      this.player.rotation = this.playerLastRotation;
+    }
   }
 }
 
