@@ -11,6 +11,7 @@ const getBgmUrl = () =>
 
 let bgmAudio = null;
 let retroRushAudio = null;
+let isBgmMuted = false;
 
 // Gameplay music runs slightly quieter than the menu by default.
 // With bgmVolume defaulting to 0.4 (40%), this yields 0.25 (25%) in Play.
@@ -48,7 +49,7 @@ export const ensureBgmPlaying = (scene) => {
     scene.registry.set("bgmVolume", volume);
   }
   audio.volume = volume;
-  audio.muted = false;
+  audio.muted = isBgmMuted;
 
   // Whenever we are (re)starting the menu BGM, make sure gameplay music
   // is not still running in the background.
@@ -63,6 +64,7 @@ export const ensureBgmPlaying = (scene) => {
 };
 
 export const setBgmMuted = (muted) => {
+  isBgmMuted = muted;
   if (bgmAudio) {
     bgmAudio.muted = muted;
   }
@@ -104,7 +106,7 @@ export const restartBgm = (scene) => {
 
   audio.currentTime = 0;
   audio.volume = volume;
-  audio.muted = false;
+  audio.muted = isBgmMuted;
   if (retroRushAudio) {
     retroRushAudio.pause();
   }
@@ -123,7 +125,7 @@ export const playRetroRush = (scene) => {
   // Always restart the gameplay track when (re)entering Play.
   audio.currentTime = 0;
   audio.volume = volume * GAMEPLAY_VOLUME_SCALE;
-  audio.muted = false;
+  audio.muted = isBgmMuted;
   audio.play().catch(() => {});
 };
 
@@ -144,7 +146,7 @@ export const resumeRetroRush = (scene) => {
 
   // Do not reset currentTime here; just continue from where it left off.
   audio.volume = volume * GAMEPLAY_VOLUME_SCALE;
-  audio.muted = false;
+  audio.muted = isBgmMuted;
   if (audio.paused) {
     audio.play().catch(() => {});
   }

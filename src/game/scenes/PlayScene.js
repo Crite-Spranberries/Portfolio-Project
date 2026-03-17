@@ -19,6 +19,8 @@ export default class PlayScene extends Phaser.Scene {
     this.cursor = null;
     this.cursorTarget = null;
     this.playerLastRotation = 0;
+    this.velocity = new Phaser.Math.Vector2(0, 0);
+    this.shipNoseLength = 20;
   }
 
   handlePointerMove(pointer) {
@@ -39,10 +41,15 @@ export default class PlayScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     if (!this.player) {
-      // Simple triangle placeholder for the player ship.
+      // Galaga sample sprite placeholder for the player ship.
+      // The sprite stays centered on its own body, while the nose offset
+      // is derived from the actual image height so it can later swap cleanly
+      // to a real ship sprite and hitbox.
       this.player = this.add
-        .triangle(width / 2, height / 2, 0, -24, -18, 18, 18, 18, 0xffffff)
-        .setOrigin(0.5);
+        .image(width / 2, height / 2, "galaga-sample")
+        .setOrigin(0.5)
+        .setScale(0.14);
+      this.shipNoseLength = this.player.displayHeight * 0.5;
 
       this.playerLastPos = new Phaser.Math.Vector2(this.player.x, this.player.y);
     } else {
@@ -50,6 +57,7 @@ export default class PlayScene extends Phaser.Scene {
       this.playerLastPos.set(width / 2, height / 2);
     }
 
+    this.velocity.set(0, 0);
     this.runActive = true;
   }
 
@@ -116,27 +124,116 @@ export default class PlayScene extends Phaser.Scene {
   update(time, delta) {
     if (!this.runActive || !this.player || !this.cursorTarget) return;
 
+    const dt = delta / 1000; // seconds
+
+    // Treat the ship's position as the nose (tip) of the triangle.
     const prevX = this.player.x;
     const prevY = this.player.y;
 
-    // Smoothly slide toward the cursor target so it feels a bit physics-based.
-    const lerpFactor = 0.12 * (delta / 16.67);
-    const nx = Phaser.Math.Linear(prevX, this.cursorTarget.x, Phaser.Math.Clamp(lerpFactor, 0, 1));
-    const ny = Phaser.Math.Linear(prevY, this.cursorTarget.y, Phaser.Math.Clamp(lerpFactor, 0, 1));
+    const targetX = this.cursorTarget.x;
+    const targetY = this.cursorTarget.y;
 
-    this.player.setPosition(nx, ny);
+    const MAX_SPEED = 760;
+    const STEER_FORCE = 1100;
+    const DRAG = 0.08;
+    const ARRIVE_RADIUS = 140;
+    const HOLD_RADIUS = 28;
+    const REST_OFFSET = this.shipNoseLength + 6;
+    const MIN_SPEED_SCALE = 0.18;
 
-    const dx = nx - prevX;
-    const dy = ny - prevY;
-    if (dx !== 0 || dy !== 0) {
-      const angle = Phaser.Math.Angle.Between(prevX, prevY, nx, ny);
-      this.player.rotation = angle + Math.PI / 2;
+    // Steering model:
+    // - build a desired velocity toward the cursor
+    // - turn the current velocity toward it gradually
+    // - keep only a light drag so momentum carries through curves
+    const desired = new Phaser.Math.Vector2(targetX - prevX, targetY - prevY);
+    const distance = desired.length();
+    if (distance > 0.0001) {
+      desired.normalize();
+    }
+
+    // Keep the ship's center trailing behind the cursor while the top nose
+    // point is the part that visually leads the movement.
+    const cursorAngle = Math.atan2(targetY - prevY, targetX - prevX);
+    const noseWorldOffsetX = Math.cos(cursorAngle) * REST_OFFSET;
+    const noseWorldOffsetY = Math.sin(cursorAngle) * REST_OFFSET;
+    const centerTargetX = targetX - noseWorldOffsetX;
+    const centerTargetY = targetY - noseWorldOffsetY;
+
+    // Ease the ship down as it gets close to the cursor so it settles instead
+    // of bouncing around the target.
+    const centerDistance = Phaser.Math.Distance.Between(
+      prevX,
+      prevY,
+      centerTargetX,
+      centerTargetY,
+    );
+    const proximity = Phaser.Math.Clamp(centerDistance / ARRIVE_RADIUS, 0, 1);
+    const arriveEase = proximity * proximity * (3 - 2 * proximity); // smoothstep
+    const speedScale = MIN_SPEED_SCALE + (1 - MIN_SPEED_SCALE) * arriveEase;
+
+    if (centerDistance <= HOLD_RADIUS) {
+      // Close enough to the cursor: stop accelerating, then brake hard so the
+      // ship coasts into a stationary hover instead of snapping to a stop.
+      const HOLD_DRAG = 5.5;
+      this.velocity.scale(Math.max(0, 1 - HOLD_DRAG * dt));
+
+      if (this.velocity.length() < 4) {
+        this.velocity.set(0, 0);
+      }
+
+      const nx = prevX + this.velocity.x * dt;
+      const ny = prevY + this.velocity.y * dt;
+      this.player.setPosition(nx, ny);
+
+      const holdAngle = Math.atan2(targetY - ny, targetX - nx);
+      this.player.rotation = holdAngle + Math.PI / 2;
       this.playerLastRotation = this.player.rotation;
       if (this.playerLastPos) {
         this.playerLastPos.set(nx, ny);
       }
-    } else if (this.playerLastRotation !== undefined) {
-      this.player.rotation = this.playerLastRotation;
+      return;
+    }
+
+    const desiredCenter = new Phaser.Math.Vector2(
+      centerTargetX - prevX,
+      centerTargetY - prevY,
+    );
+    if (desiredCenter.length() > 0.0001) {
+      desiredCenter.normalize();
+    }
+
+    const desiredVelocity = desiredCenter.clone().scale(MAX_SPEED * speedScale);
+    const steer = desiredVelocity.clone().subtract(this.velocity);
+
+    // Limit how quickly we can re-aim, which creates drift on sharp turns.
+    const maxSteer = (STEER_FORCE * (0.35 + 0.65 * arriveEase)) * dt;
+    const steerLen = steer.length();
+    if (steerLen > maxSteer && steerLen > 0.0001) {
+      steer.scale(maxSteer / steerLen);
+    }
+
+    this.velocity.add(steer);
+
+    // Extra braking as we approach the cursor so the ship can settle into a
+    // stable hover without wobbling back and forth around the target.
+    const drag = DRAG + (1 - arriveEase) * 0.22;
+    this.velocity.scale(1 - drag * dt);
+
+    if (this.velocity.length() > MAX_SPEED) {
+      this.velocity.setLength(MAX_SPEED);
+    }
+
+    const nx = prevX + this.velocity.x * dt;
+    const ny = prevY + this.velocity.y * dt;
+
+    this.player.setPosition(nx, ny);
+
+    // Keep the ship facing the cursor even while it drifts through turns.
+    const aimAngle = Math.atan2(targetY - ny, targetX - nx);
+    this.player.rotation = aimAngle + Math.PI / 2;
+    this.playerLastRotation = this.player.rotation;
+    if (this.playerLastPos) {
+      this.playerLastPos.set(nx, ny);
     }
   }
 }

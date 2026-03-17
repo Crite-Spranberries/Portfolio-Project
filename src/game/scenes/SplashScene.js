@@ -66,6 +66,12 @@ export default class SplashScene extends Phaser.Scene {
       "dummy",
       "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAEklEQVR4nGNgYGD4zwABBgEAAT9Hq2sAAAAASUVORK5CYII=",
     );
+
+    // Placeholder player ship sprite for the gameplay scene.
+    this.load.image(
+      "galaga-sample",
+      new URL("../../assets/bebop/sprites/galaga_sample.png", import.meta.url).href,
+    );
   }
 
   create() {

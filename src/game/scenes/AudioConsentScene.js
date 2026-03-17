@@ -44,8 +44,8 @@ export default class AudioConsentScene extends Phaser.Scene {
       this.sound.mute = true;
       this.registry.set("audioEnabled", false);
       try {
-        ensureBgmPlaying(this);
         setBgmMuted(true);
+        ensureBgmPlaying(this);
       } catch (e) {
         console.error("Error starting BGM in Play muted handler:", e);
       }
