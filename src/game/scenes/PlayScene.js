@@ -37,6 +37,7 @@ export default class PlayScene extends Phaser.Scene {
     this.velocity = new Phaser.Math.Vector2(0, 0);
     this.shipNoseLength = 20;
     this.boostKey = null;
+    this.pauseKey = null;
 
     // --- Projectile system state (player bullets) ---
     this.projectiles = null;
@@ -218,6 +219,7 @@ export default class PlayScene extends Phaser.Scene {
     this.input.on("pointermove", this.onPointerMove);
     this.input.on("pointerdown", this.onPointerDown);
     this.boostKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.pauseKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC);
 
     // Player projectile pool – reuse this same helper later for enemies
     // by passing a different textureKey and, if needed, size.
@@ -271,6 +273,15 @@ export default class PlayScene extends Phaser.Scene {
       })
       .setOrigin(1, 1);
 
+    // Lightweight controls caption in the top‑left corner so players can see
+    // the keybinds at a glance.
+    this.add.text(24, 24, "[LMB] Fire\n[E] Speed Boost\n[Move Cursor] Aim/Maneuver\n[ESC] Pause Game", {
+      fontFamily: '"Epilogue", system-ui, sans-serif',
+      fontSize: "12px",
+      color: "#999999",
+      align: "left",
+    });
+
     // When entering gameplay, show a 3-2-1-GO countdown overlay before
     // the player and ship start interacting.
     this.scene.launch("Countdown");
@@ -280,7 +291,15 @@ export default class PlayScene extends Phaser.Scene {
     if (!this.runActive || !this.player || !this.cursorTarget) return;
 
     const dt = delta / 1000; // seconds
+    // Speed boost is driven by the E key.
     const boostActive = !!this.boostKey?.isDown;
+
+    // ESC key also pauses, in addition to the on‑screen Pause button.
+    if (this.pauseKey && Phaser.Input.Keyboard.JustDown(this.pauseKey)) {
+      this.scene.launch("Pause");
+      this.scene.pause();
+      return;
+    }
 
     if (this.input.activePointer?.isDown) {
       this.fireProjectile(time);
