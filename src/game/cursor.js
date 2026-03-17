@@ -31,7 +31,9 @@ export const attachYellowCursor = (scene) => {
   scene.input.on("pointerup", handleUp);
 
   scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
-    cursor.destroy();
+    if (cursor.active) {
+      cursor.destroy();
+    }
     scene.input.off("pointermove", handleMove);
     scene.input.off("pointerdown", handleDown);
     scene.input.off("pointerup", handleUp);

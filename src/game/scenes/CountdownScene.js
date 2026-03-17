@@ -38,6 +38,10 @@ export default class CountdownScene extends Phaser.Scene {
     let index = 0;
     label.setText(steps[index]);
 
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      this.time.removeAllEvents();
+    });
+
     this.time.addEvent({
       delay: 1000,
       repeat: steps.length - 1,

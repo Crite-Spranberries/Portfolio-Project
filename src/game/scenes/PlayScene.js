@@ -22,6 +22,11 @@ export default class PlayScene extends Phaser.Scene {
     this.velocity = new Phaser.Math.Vector2(0, 0);
     this.shipNoseLength = 20;
     this.boostKey = null;
+    this.projectiles = null;
+    this.fireIntervalMs = 200;
+    this.lastShotAt = -Infinity;
+    this.onPointerMove = null;
+    this.onPointerDown = null;
   }
 
   handlePointerMove(pointer) {
@@ -38,10 +43,19 @@ export default class PlayScene extends Phaser.Scene {
     }
   }
 
+  handlePointerDown(pointer) {
+    if (pointer?.leftButtonDown?.()) {
+      this.fireProjectile(this.time.now);
+    }
+  }
+
   startRun() {
     const { width, height } = this.scale;
 
-    if (!this.player) {
+    if (!this.player || !this.player.active) {
+      if (this.player && !this.player.active) {
+        this.player.destroy();
+      }
       // Galaga sample sprite placeholder for the player ship.
       // The sprite stays centered on its own body, while the nose offset
       // is derived from the actual image height so it can later swap cleanly
@@ -60,10 +74,106 @@ export default class PlayScene extends Phaser.Scene {
 
     this.velocity.set(0, 0);
     this.runActive = true;
+    this.lastShotAt = -Infinity;
+  }
+
+  fireProjectile(time) {
+    if (!this.runActive || !this.player || !this.projectiles) return;
+    if (time - this.lastShotAt < this.fireIntervalMs) return;
+
+    const shotAngle = this.player.rotation - Math.PI / 2;
+    const spawnOffset = this.shipNoseLength + 10;
+    const spawnX = this.player.x + Math.cos(shotAngle) * spawnOffset;
+    const spawnY = this.player.y + Math.sin(shotAngle) * spawnOffset;
+
+    const projectile = this.projectiles.get(spawnX, spawnY, "galaga-bullet");
+    if (!projectile) return;
+
+    projectile
+      .setActive(true)
+      .setVisible(true)
+      .setDepth(5)
+      .setOrigin(0.5)
+      .setScale(0.08)
+      .setRotation(this.player.rotation);
+
+    projectile.enableBody(true, spawnX, spawnY, true, true);
+    projectile.body.setAllowGravity(false);
+    projectile.body.reset(spawnX, spawnY);
+    projectile.body.setVelocity(
+      Math.cos(shotAngle) * 980,
+      Math.sin(shotAngle) * 980,
+    );
+
+    this.lastShotAt = time;
+  }
+
+  updateProjectiles() {
+    if (!this.projectiles) return;
+
+    const { width, height } = this.scale;
+    const margin = 96;
+
+    this.projectiles.children.each((projectile) => {
+      if (!projectile || !projectile.active) return;
+
+      if (
+        projectile.x < -margin ||
+        projectile.x > width + margin ||
+        projectile.y < -margin ||
+        projectile.y > height + margin
+      ) {
+        projectile.disableBody(true, true);
+      }
+    });
+  }
+
+  shutdownSceneState() {
+    if (this.scene.isActive("Countdown")) {
+      this.scene.stop("Countdown");
+    }
+
+    this.input.off("pointermove", this.onPointerMove, this);
+    this.input.off("pointerdown", this.onPointerDown, this);
+
+    if (this.projectiles) {
+      this.projectiles.clear(true, true);
+      this.projectiles.destroy(true);
+      this.projectiles = null;
+    }
+
+    if (this.player) {
+      this.player.destroy();
+      this.player = null;
+    }
+
+    if (this.cursor) {
+      this.cursor.destroy();
+      this.cursor = null;
+    }
+
+    // Destroy any remaining visible PlayScene objects such as the pause button
+    // and HUD circles/text so nothing lingers when we return to the menu.
+    const remainingChildren = [...this.children.list];
+    remainingChildren.forEach((child) => {
+      if (child && !child.destroyed) {
+        child.destroy();
+      }
+    });
+
+    this.playerLastPos = null;
+    this.cursorTarget = null;
+    this.boostKey = null;
+    this.runActive = false;
+    this.velocity.set(0, 0);
+    this.lastShotAt = -Infinity;
   }
 
   create() {
     const { width, height } = this.scale;
+
+    // Make sure any stale objects from a prior stop/start are discarded.
+    this.shutdownSceneState();
 
     // Swap away from menu music; actual gameplay track starts
     // after the 3-2-1-GO countdown completes.
@@ -72,8 +182,18 @@ export default class PlayScene extends Phaser.Scene {
     // Attach shared yellow cursor used across all scenes.
     this.cursor = attachYellowCursor(this);
     this.cursorTarget = new Phaser.Math.Vector2(width / 2, height / 2);
-    this.input.on("pointermove", this.handlePointerMove, this);
+    this.onPointerMove = this.handlePointerMove.bind(this);
+    this.onPointerDown = this.handlePointerDown.bind(this);
+    this.input.on("pointermove", this.onPointerMove);
+    this.input.on("pointerdown", this.onPointerDown);
     this.boostKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
+    this.projectiles = this.physics.add.group({
+      classType: Phaser.Physics.Arcade.Image,
+      maxSize: 32,
+      runChildUpdate: false,
+    });
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdownSceneState, this);
 
     // Pause button at the top center of the viewport.
     createTextButton(
@@ -128,6 +248,10 @@ export default class PlayScene extends Phaser.Scene {
 
     const dt = delta / 1000; // seconds
     const boostActive = !!this.boostKey?.isDown;
+
+    if (this.input.activePointer?.isDown) {
+      this.fireProjectile(time);
+    }
 
     // Treat the ship's position as the nose (tip) of the triangle.
     const prevX = this.player.x;
@@ -238,6 +362,8 @@ export default class PlayScene extends Phaser.Scene {
     if (this.playerLastPos) {
       this.playerLastPos.set(nx, ny);
     }
+
+    this.updateProjectiles();
   }
 }
 

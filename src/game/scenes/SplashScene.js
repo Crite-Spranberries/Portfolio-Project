@@ -72,6 +72,12 @@ export default class SplashScene extends Phaser.Scene {
       "galaga-sample",
       new URL("../../assets/bebop/sprites/galaga_sample.png", import.meta.url).href,
     );
+
+    // Placeholder projectile sprite for the gameplay scene.
+    this.load.image(
+      "galaga-bullet",
+      new URL("../../assets/bebop/sprites/galaga_bulletsample.png", import.meta.url).href,
+    );
   }
 
   create() {

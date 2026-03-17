@@ -52,12 +52,32 @@ export default class PauseScene extends Phaser.Scene {
       height / 2 + 40,
       "Back to Menu",
       () => {
-        this.registry.set("fromPlay", true);
-        pauseRetroRush();
-        endGameSession(this);
-        this.scene.stop("Play");
-        this.scene.stop(); // stop Pause
-        this.scene.start("Menu");
+        const sceneManager = this.scene;
+        const registry = this.registry;
+        const pauseScene = this;
+
+        // Defer the transition one tick so the button callback can return
+        // before Phaser starts tearing scenes down and rebuilding Menu.
+        setTimeout(() => {
+          registry.set("fromPlay", true);
+          pauseRetroRush();
+          endGameSession(pauseScene);
+
+          const playScene = sceneManager.get("Play");
+          if (playScene && typeof playScene.shutdownSceneState === "function") {
+            playScene.shutdownSceneState();
+          }
+
+          if (sceneManager.isActive("Countdown")) {
+            sceneManager.stop("Countdown");
+          }
+          if (sceneManager.isActive("Play")) {
+            sceneManager.stop("Play");
+          }
+
+          sceneManager.stop("Pause");
+          sceneManager.start("Menu");
+        }, 0);
       },
       { fontSize: "18px" },
     );
