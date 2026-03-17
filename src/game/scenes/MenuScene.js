@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 import { createTextButton } from "../ui/textButton";
-import { ensureBgmPlaying } from "../audio/bgm";
+import { restartBgm } from "../audio/bgm";
 
 // 3) Main menu scene: Start / Settings / Credits
 export default class MenuScene extends Phaser.Scene {
@@ -33,10 +33,10 @@ export default class MenuScene extends Phaser.Scene {
       this.scene.start("Credits");
     });
 
-    // Try to (re)start background music when arriving at the menu.
-    // If it fails, the game still runs normally.
+    // When entering the menu, always restart the menu BGM from the beginning
+    // at the current volume level so navigation feels consistent.
     try {
-      ensureBgmPlaying(this);
+      restartBgm(this);
     } catch (e) {
       // eslint-disable-next-line no-console
       console.error("Error starting BGM in MenuScene:", e);

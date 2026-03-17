@@ -21,8 +21,9 @@ export default class SettingsScene extends Phaser.Scene {
 
     const audioEnabled = this.registry.get("audioEnabled");
     let bgmVolume = this.registry.get("bgmVolume");
+    // Default all background music (menu + gameplay) to 40% volume.
     if (typeof bgmVolume !== "number") {
-      bgmVolume = 0.6;
+      bgmVolume = 0.4;
       this.registry.set("bgmVolume", bgmVolume);
     }
 
@@ -54,48 +55,75 @@ export default class SettingsScene extends Phaser.Scene {
       { fontSize: "18px" },
     );
 
-    // Music volume controls
+    // Music volume controls:
+    // Visual layout:  Volume  [====bar====]  -  +
+    const volumeRowY = height / 2 + 70;
+
     const volumeLabel = this.add
+      .text(width / 2 - 170, volumeRowY, "Volume", {
+        fontFamily: '"Epilogue", system-ui, sans-serif',
+        fontSize: "18px",
+        color: "#d0d0d0",
+      })
+      .setOrigin(0, 0.5);
+
+    const barWidth = 160;
+    const barHeight = 10;
+    const barX = volumeLabel.x + volumeLabel.width + 16;
+
+    // Background of the volume bar
+    this.add
+      .rectangle(barX + barWidth / 2, volumeRowY, barWidth, barHeight, 0x111111, 0.9)
+      .setStrokeStyle(1, 0xffffff, 0.25);
+
+    // Filled portion of the bar that visualizes the current volume
+    const volumeFill = this.add
+      .rectangle(barX, volumeRowY, barWidth * bgmVolume, barHeight, 0xffffff)
+      .setOrigin(0, 0.5);
+
+    // Numeric percentage shown under the bar for clarity while learning
+    const volumePercentLabel = this.add
       .text(
-        width / 2,
-        height / 2 + 60,
-        `Music volume: ${(bgmVolume * 100).toFixed(0)}%`,
+        barX + barWidth / 2,
+        volumeRowY + 18,
+        `${(bgmVolume * 100).toFixed(0)}%`,
         {
           fontFamily: '"Epilogue", system-ui, sans-serif',
-          fontSize: "18px",
-          color: "#d0d0d0",
+          fontSize: "14px",
+          color: "#b5b5b5",
         },
       )
       .setOrigin(0.5);
 
     const applyVolume = () => {
       this.registry.set("bgmVolume", bgmVolume);
-      volumeLabel.setText(`Music volume: ${(bgmVolume * 100).toFixed(0)}%`);
+      volumeFill.width = barWidth * bgmVolume;
       setBgmVolume(bgmVolume);
+      volumePercentLabel.setText(`${(bgmVolume * 100).toFixed(0)}%`);
     };
 
     const volDown = createTextButton(
       this,
-      width / 2 - 80,
-      height / 2 + 90,
-      "- Volume",
+      barX + barWidth + 28,
+      volumeRowY,
+      "-",
       () => {
         bgmVolume = Phaser.Math.Clamp(bgmVolume - 0.1, 0, 1);
         applyVolume();
       },
-      { fontSize: "16px" },
+      { fontSize: "18px" },
     );
 
     const volUp = createTextButton(
       this,
-      width / 2 + 80,
-      height / 2 + 90,
-      "+ Volume",
+      barX + barWidth + 60,
+      volumeRowY,
+      "+",
       () => {
         bgmVolume = Phaser.Math.Clamp(bgmVolume + 0.1, 0, 1);
         applyVolume();
       },
-      { fontSize: "16px" },
+      { fontSize: "18px" },
     );
 
     // Back to menu

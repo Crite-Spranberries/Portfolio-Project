@@ -2,6 +2,7 @@ import { bebopAsset } from "../assets";
 
 // BGM via plain HTMLAudioElement; loaded only after user consent (keeps large file off initial load).
 const BGM_PATH = "audio/music/space-lion-retro.mp3";
+const RETRO_RUSH_PATH = "audio/music/rush-retro.mp3";
 // Dev: literal path works with Vite's server. Prod: use resolved asset URL.
 const getBgmUrl = () =>
   typeof window !== "undefined" && import.meta.env.DEV
@@ -9,6 +10,7 @@ const getBgmUrl = () =>
     : bebopAsset(BGM_PATH);
 
 let bgmAudio = null;
+let retroRushAudio = null;
 
 const ensureAudioElement = () => {
   if (!bgmAudio) {
@@ -18,6 +20,19 @@ const ensureAudioElement = () => {
   return bgmAudio;
 };
 
+const getRetroRushUrl = () =>
+  typeof window !== "undefined" && import.meta.env.DEV
+    ? window.location.origin + "/src/assets/bebop/" + RETRO_RUSH_PATH
+    : bebopAsset(RETRO_RUSH_PATH);
+
+const ensureRetroRushElement = () => {
+  if (!retroRushAudio) {
+    retroRushAudio = new Audio(getRetroRushUrl());
+    retroRushAudio.loop = true;
+  }
+  return retroRushAudio;
+};
+
 // Ensure background music is playing at the desired volume.
 // Must run in the same call stack as the user click so play() is allowed by autoplay policy.
 export const ensureBgmPlaying = (scene) => {
@@ -25,7 +40,7 @@ export const ensureBgmPlaying = (scene) => {
 
   let volume = scene.registry.get("bgmVolume");
   if (typeof volume !== "number") {
-    volume = 0.6;
+    volume = 0.4;
     scene.registry.set("bgmVolume", volume);
   }
   audio.volume = volume;
@@ -41,11 +56,67 @@ export const setBgmMuted = (muted) => {
   if (bgmAudio) {
     bgmAudio.muted = muted;
   }
+  if (retroRushAudio) {
+    retroRushAudio.muted = muted;
+  }
 };
 
 export const setBgmVolume = (volume) => {
   if (bgmAudio) {
     bgmAudio.volume = volume;
+  }
+  if (retroRushAudio) {
+    retroRushAudio.volume = volume;
+  }
+};
+
+export const pauseBgm = () => {
+  if (bgmAudio) {
+    bgmAudio.pause();
+  }
+};
+
+export const resumeBgm = () => {
+  if (bgmAudio && bgmAudio.paused) {
+    bgmAudio.play().catch(() => {});
+  }
+};
+
+// Explicitly restart the background music from the beginning.
+export const restartBgm = (scene) => {
+  const audio = ensureAudioElement();
+
+  let volume = scene.registry.get("bgmVolume");
+  if (typeof volume !== "number") {
+    volume = 0.4;
+    scene.registry.set("bgmVolume", volume);
+  }
+
+  audio.currentTime = 0;
+  audio.volume = volume;
+  audio.muted = false;
+  audio.play().catch(() => {});
+};
+
+export const playRetroRush = (scene) => {
+  const audio = ensureRetroRushElement();
+
+  let volume = scene.registry.get("bgmVolume");
+  if (typeof volume !== "number") {
+    volume = 0.4;
+    scene.registry.set("bgmVolume", volume);
+  }
+
+  // Always restart the gameplay track when (re)entering Play.
+  audio.currentTime = 0;
+  audio.volume = volume;
+  audio.muted = false;
+  audio.play().catch(() => {});
+};
+
+export const pauseRetroRush = () => {
+  if (retroRushAudio) {
+    retroRushAudio.pause();
   }
 };
 

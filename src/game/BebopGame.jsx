@@ -6,6 +6,7 @@ import MenuScene from "./scenes/MenuScene";
 import PlayScene from "./scenes/PlayScene";
 import SettingsScene from "./scenes/SettingsScene";
 import CreditsScene from "./scenes/CreditsScene";
+import { pauseBgm, resumeBgm } from "./audio/bgm";
 
 function BebopGame() {
   const containerRef = useRef(null);
@@ -41,7 +42,24 @@ function BebopGame() {
     const game = new Phaser.Game(config);
     gameRef.current = game;
 
+    // Keep audio scoped to the game viewport.
+    // - Clicking inside the game resumes background music (if it was playing before).
+    // - Clicking anywhere outside the game pauses the music.
+    const handlePointerDown = (event) => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      if (container.contains(event.target)) {
+        resumeBgm();
+      } else {
+        pauseBgm();
+      }
+    };
+
+    document.addEventListener("pointerdown", handlePointerDown);
+
     return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
       game.destroy(true);
       gameRef.current = null;
     };
