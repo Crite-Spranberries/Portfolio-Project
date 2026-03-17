@@ -11,7 +11,7 @@ function Bebop() {
   useEffect(() => {
     // When this page mounts, update the browser tab title so it is
     // clear to the user that they are on the Bebop game screen.
-    document.title = "Bebop";
+    document.title = "Swordfish Skirmish";
 
     // When the user navigates away from this page, restore the main
     // portfolio title so other pages keep their expected branding.
@@ -52,7 +52,15 @@ function Bebop() {
             </div>
             <div className="bebop-desc-copy">
               <h2>Game Overview</h2>
-              <p>High-level description of the game and its core loop.</p>
+              <p>
+                Swordfish Skirmish is a 2D game where you play as a space cowboy
+                that has been stranded in an endless dogfight against asteroids
+                and hostile ships. Pilot the "Swordfish" and last as long as you
+                can against the increasing onslought of debris and enemy
+                presence. With the power of your mouse, drift and maneuver
+                around your constrained area while maneuvering around hostile
+                entities.{" "}
+              </p>
             </div>
           </div>
 
@@ -63,10 +71,16 @@ function Bebop() {
             </div>
             <div className="bebop-desc-copy">
               <h3>How to Play (Desktop)</h3>
-              <p>Desktop controls, tips.</p>
+              <p>[LMB] Fire</p>
+              <p>[E] Speed Boost</p>
+              <p>[Move Cursor] Aim/Maneuver</p>
+              <p>[ESC] Pause Game</p>
 
               <h3>How to Play (Mobile)</h3>
-              <p>Mobile / touch controls, tips.</p>
+              <p>
+                [Mode to be added. Currently only desktop controls are
+                supported.]
+              </p>
             </div>
           </div>
 
@@ -76,9 +90,14 @@ function Bebop() {
               {/* Logos, code snippets, or a simple diagram of the game architecture. */}
             </div>
             <div className="bebop-desc-copy">
-              <h3>Tech Stack & Repo</h3>
+              <h3>Tech Stack</h3>
               <p>
-                Details on Phaser, tooling, and a link to the standalone build.
+                Swordfish Skirmish was built using Phaser 3, a lightweight 2D
+                game framework. It was hand developed and assisted in
+                development with Cursor AI to shorten the curve in learning
+                Phaser 3 and translating the game concepts into Phaser's OOP
+                style structure. The game is hosted on this website which is
+                built on Vite and React.
               </p>
             </div>
           </div>

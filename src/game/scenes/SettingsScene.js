@@ -16,7 +16,7 @@ export default class SettingsScene extends Phaser.Scene {
 
     this.add
       .text(width / 2, height / 4, "Settings", {
-        fontFamily: '"Epilogue", system-ui, sans-serif',
+        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
         fontSize: "26px",
         color: "#ffffff",
       })
@@ -32,7 +32,7 @@ export default class SettingsScene extends Phaser.Scene {
 
     const status = this.add
       .text(width / 2, height / 2 - 10, `Audio: ${audioEnabled ? "On" : "Muted"}`, {
-        fontFamily: '"Epilogue", system-ui, sans-serif',
+        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
         fontSize: "18px",
         color: "#d0d0d0",
       })
@@ -64,7 +64,7 @@ export default class SettingsScene extends Phaser.Scene {
 
     const volumeLabel = this.add
       .text(width / 2 - 170, volumeRowY, "Volume", {
-        fontFamily: '"Epilogue", system-ui, sans-serif',
+        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
         fontSize: "18px",
         color: "#d0d0d0",
       })
@@ -91,7 +91,7 @@ export default class SettingsScene extends Phaser.Scene {
         volumeRowY + 18,
         `${(bgmVolume * 100).toFixed(0)}%`,
         {
-          fontFamily: '"Epilogue", system-ui, sans-serif',
+          fontFamily: '"ArcadeClassic", system-ui, sans-serif',
           fontSize: "14px",
           color: "#b5b5b5",
         },
@@ -146,7 +146,7 @@ export default class SettingsScene extends Phaser.Scene {
         12,
         `Muted: ${!audioEnabled}\n(BGM managed via HTMLAudioElement)`,
         {
-          fontFamily: '"Epilogue", system-ui, sans-serif',
+          fontFamily: '"ArcadeClassic", system-ui, sans-serif',
           fontSize: "12px",
           color: "#888888",
           align: "left",

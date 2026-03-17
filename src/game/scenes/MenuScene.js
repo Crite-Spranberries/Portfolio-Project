@@ -18,8 +18,8 @@ export default class MenuScene extends Phaser.Scene {
     this.add.rectangle(width / 2, height / 2, width, height, 0x000000, 0.6);
 
     this.add
-      .text(width / 2, height / 4, "[Placeholder Title]", {
-        fontFamily: '"Epilogue", system-ui, sans-serif',
+      .text(width / 2, height / 4, "Swordfish Skirmish", {
+        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
         fontSize: "32px",
         color: "#ffffff",
       })

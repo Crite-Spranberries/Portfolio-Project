@@ -2,7 +2,7 @@
 export const createTextButton = (scene, x, y, label, onClick, style = {}) => {
   const text = scene.add
     .text(x, y, label, {
-      fontFamily: '"Epilogue", system-ui, sans-serif',
+      fontFamily: '"ArcadeClassic", system-ui, sans-serif',
       fontSize: "20px",
       color: "#ffffff",
       ...style,

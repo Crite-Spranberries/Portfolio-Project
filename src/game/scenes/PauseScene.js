@@ -29,7 +29,7 @@ export default class PauseScene extends Phaser.Scene {
 
     this.add
       .text(width / 2, height / 2 - 60, "Paused", {
-        fontFamily: '"Epilogue", system-ui, sans-serif',
+        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
         fontSize: "28px",
         color: "#ffffff",
       })

@@ -281,7 +281,7 @@ export default class PlayScene extends Phaser.Scene {
 
     this.add
       .text(width - rightMargin, hudY - largeRadius - 16, "Spike's face", {
-        fontFamily: '"Epilogue", system-ui, sans-serif',
+        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
         fontSize: "14px",
         color: "#ffffff",
       })
@@ -335,7 +335,7 @@ export default class PlayScene extends Phaser.Scene {
       24,
       "CONTROLS:\n\n[LMB] Fire\n[E] Speed Boost\n[Move Cursor] Aim/Maneuver\n[ESC] Pause Game",
       {
-        fontFamily: '"Epilogue", system-ui, sans-serif',
+        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
         fontSize: "12px",
         color: "#999999",
         align: "left",
