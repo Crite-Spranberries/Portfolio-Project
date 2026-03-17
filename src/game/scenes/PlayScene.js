@@ -21,6 +21,7 @@ export default class PlayScene extends Phaser.Scene {
     this.playerLastRotation = 0;
     this.velocity = new Phaser.Math.Vector2(0, 0);
     this.shipNoseLength = 20;
+    this.boostKey = null;
   }
 
   handlePointerMove(pointer) {
@@ -72,6 +73,7 @@ export default class PlayScene extends Phaser.Scene {
     this.cursor = attachYellowCursor(this);
     this.cursorTarget = new Phaser.Math.Vector2(width / 2, height / 2);
     this.input.on("pointermove", this.handlePointerMove, this);
+    this.boostKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
 
     // Pause button at the top center of the viewport.
     createTextButton(
@@ -125,6 +127,7 @@ export default class PlayScene extends Phaser.Scene {
     if (!this.runActive || !this.player || !this.cursorTarget) return;
 
     const dt = delta / 1000; // seconds
+    const boostActive = !!this.boostKey?.isDown;
 
     // Treat the ship's position as the nose (tip) of the triangle.
     const prevX = this.player.x;
@@ -133,13 +136,13 @@ export default class PlayScene extends Phaser.Scene {
     const targetX = this.cursorTarget.x;
     const targetY = this.cursorTarget.y;
 
-    const MAX_SPEED = 760;
-    const STEER_FORCE = 1100;
-    const DRAG = 0.08;
+    const MAX_SPEED = boostActive ? 1060 : 760;
+    const STEER_FORCE = boostActive ? 1600 : 1100;
+    const DRAG = boostActive ? 0.035 : 0.08;
     const ARRIVE_RADIUS = 140;
     const HOLD_RADIUS = 28;
     const REST_OFFSET = this.shipNoseLength + 6;
-    const MIN_SPEED_SCALE = 0.18;
+    const MIN_SPEED_SCALE = boostActive ? 0.42 : 0.18;
 
     // Steering model:
     // - build a desired velocity toward the cursor
