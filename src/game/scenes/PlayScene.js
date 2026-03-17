@@ -10,9 +10,24 @@ import { attachYellowCursor } from "../cursor";
 // When leaving gameplay we:
 // - Stop \"Retro Rush\"
 // - Resume the normal background music on the menu
+// Small, reusable projectile helper so future entities (enemies, turrets, etc.)
+// can share the same pool + spawn logic with different configs.
+const createProjectilePool = (scene, {
+  textureKey,
+  maxSize = 48,
+} = {}) =>
+  scene.physics.add.group({
+    classType: Phaser.Physics.Arcade.Image,
+    maxSize,
+    runChildUpdate: false,
+    defaultKey: textureKey,
+  });
+
 export default class PlayScene extends Phaser.Scene {
   constructor() {
     super("Play");
+
+    // --- Ship / movement state ---
     this.player = null;
     this.playerLastPos = null;
     this.runActive = false;
@@ -22,9 +37,13 @@ export default class PlayScene extends Phaser.Scene {
     this.velocity = new Phaser.Math.Vector2(0, 0);
     this.shipNoseLength = 20;
     this.boostKey = null;
+
+    // --- Projectile system state (player bullets) ---
     this.projectiles = null;
-    this.fireIntervalMs = 200;
+    this.fireIntervalMs = 200; // time between shots when holding LMB
     this.lastShotAt = -Infinity;
+
+    // Cached input handlers so we can unregister cleanly on shutdown.
     this.onPointerMove = null;
     this.onPointerDown = null;
   }
@@ -77,18 +96,24 @@ export default class PlayScene extends Phaser.Scene {
     this.lastShotAt = -Infinity;
   }
 
+  // --- Projectile helpers ---------------------------------------------------
+
   fireProjectile(time) {
     if (!this.runActive || !this.player || !this.projectiles) return;
     if (time - this.lastShotAt < this.fireIntervalMs) return;
 
+    // Forward direction based on ship rotation (our sprite points "up").
     const shotAngle = this.player.rotation - Math.PI / 2;
+
+    // Spawn from slightly in front of the ship nose so bullets don't overlap it.
     const spawnOffset = this.shipNoseLength + 10;
     const spawnX = this.player.x + Math.cos(shotAngle) * spawnOffset;
     const spawnY = this.player.y + Math.sin(shotAngle) * spawnOffset;
 
-    const projectile = this.projectiles.get(spawnX, spawnY, "galaga-bullet");
+    const projectile = this.projectiles.get(spawnX, spawnY);
     if (!projectile) return;
 
+    // Visual setup – easy to tweak per-entity later.
     projectile
       .setActive(true)
       .setVisible(true)
@@ -97,12 +122,16 @@ export default class PlayScene extends Phaser.Scene {
       .setScale(0.08)
       .setRotation(this.player.rotation);
 
+    // Physics setup – speed and behaviour are centralized here so we can
+    // reuse this for enemies with different values.
+    const PROJECTILE_SPEED = 1450; // faster than before for a snappier feel
+
     projectile.enableBody(true, spawnX, spawnY, true, true);
     projectile.body.setAllowGravity(false);
     projectile.body.reset(spawnX, spawnY);
     projectile.body.setVelocity(
-      Math.cos(shotAngle) * 980,
-      Math.sin(shotAngle) * 980,
+      Math.cos(shotAngle) * PROJECTILE_SPEED,
+      Math.sin(shotAngle) * PROJECTILE_SPEED,
     );
 
     this.lastShotAt = time;
@@ -117,6 +146,8 @@ export default class PlayScene extends Phaser.Scene {
     this.projectiles.children.each((projectile) => {
       if (!projectile || !projectile.active) return;
 
+      // Simple viewport culling: anything that leaves the screen with a
+      // small margin is returned to the pool.
       if (
         projectile.x < -margin ||
         projectile.x > width + margin ||
@@ -187,10 +218,12 @@ export default class PlayScene extends Phaser.Scene {
     this.input.on("pointermove", this.onPointerMove);
     this.input.on("pointerdown", this.onPointerDown);
     this.boostKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.E);
-    this.projectiles = this.physics.add.group({
-      classType: Phaser.Physics.Arcade.Image,
-      maxSize: 32,
-      runChildUpdate: false,
+
+    // Player projectile pool – reuse this same helper later for enemies
+    // by passing a different textureKey and, if needed, size.
+    this.projectiles = createProjectilePool(this, {
+      textureKey: "galaga-bullet",
+      maxSize: 64,
     });
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.shutdownSceneState, this);
