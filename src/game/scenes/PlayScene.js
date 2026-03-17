@@ -36,15 +36,15 @@ export default class PlayScene extends Phaser.Scene {
     );
 
     // HUD placeholder in the top‑right corner:
-    // three small icons (lives) and one larger icon (character face).
+    // three small icons (lives) and one larger icon (player avatar).
     const hudY = 40;
     const largeRadius = 26;
     const smallRadius = 12;
     const rightMargin = 32;
 
-    // Big icon (Spike's face placeholder)
+    // Big icon (player avatar placeholder)
     this.add
-      .circle(width - rightMargin, hudY, largeRadius, 0x7fdc7f)
+      .circle(width - rightMargin, hudY, largeRadius, 0xffffff)
       .setStrokeStyle(2, 0xffffff, 0.8);
 
     // Three smaller icons to the left of the big one (spaceships / lives)
@@ -52,7 +52,7 @@ export default class PlayScene extends Phaser.Scene {
     for (let i = 0; i < 3; i += 1) {
       const x = width - rightMargin - largeRadius - 16 - i * spacing;
       this.add
-        .circle(x, hudY, smallRadius, 0x7fdc7f)
+        .circle(x, hudY, smallRadius, 0xffffff)
         .setStrokeStyle(1.5, 0xffffff, 0.8);
     }
 
@@ -63,23 +63,6 @@ export default class PlayScene extends Phaser.Scene {
         color: "#ffffff",
       })
       .setOrigin(1, 1);
-
-    this.add
-      .text(width - rightMargin - largeRadius - 16, hudY + largeRadius + 6, "Spaceships (Lives)", {
-        fontFamily: '"Epilogue", system-ui, sans-serif',
-        fontSize: "12px",
-        color: "#b5b5b5",
-      })
-      .setOrigin(1, 0);
-
-    // Placeholder text for the gameplay area itself.
-    this.add
-      .text(width / 2, height / 2, "Gameplay goes here", {
-        fontFamily: '"Epilogue", system-ui, sans-serif',
-        fontSize: "24px",
-        color: "#ffffff",
-      })
-      .setOrigin(0.5);
 
     // When entering gameplay, show a 3-2-1-GO countdown overlay before
     // the player starts interacting.
