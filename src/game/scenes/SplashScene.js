@@ -68,9 +68,9 @@ export default class SplashScene extends Phaser.Scene {
   }
 
   create() {
-    // Set a default BGM volume the first time the game boots
+    // Set a default BGM volume the first time the game boots (40%).
     if (typeof this.registry.get("bgmVolume") !== "number") {
-      this.registry.set("bgmVolume", 0.6);
+      this.registry.set("bgmVolume", 0.4);
     }
 
     const { width, height } = this.scale;
