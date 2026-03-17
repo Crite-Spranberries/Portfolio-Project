@@ -2,6 +2,7 @@ import Phaser from "phaser";
 import { createTextButton } from "../ui/textButton";
 import { pauseRetroRush } from "../audio/bgm";
 import { endGameSession } from "../session";
+import { attachYellowCursor } from "../cursor";
 
 // Lightweight overlay scene shown on top of PlayScene when the user hits Pause.
 // While this scene is active, gameplay music is paused; the Countdown scene
@@ -21,6 +22,10 @@ export default class PauseScene extends Phaser.Scene {
     this.add
       .rectangle(width / 2, height / 2, width, height, 0x000000, 0.6)
       .setScrollFactor(0);
+
+    // Keep the custom yellow cursor active while paused so the pointer
+    // still feels responsive even though the Play scene is frozen.
+    attachYellowCursor(this);
 
     this.add
       .text(width / 2, height / 2 - 60, "Paused", {
