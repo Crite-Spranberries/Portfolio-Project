@@ -41,7 +41,7 @@ export default class SplashScene extends Phaser.Scene {
 
     this.add
       .text(width / 2, y - 40, "Loading...", {
-        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+        fontFamily: '"Bytebounce", system-ui, sans-serif',
         fontSize: "20px",
         color: "#ffffff",
       })
@@ -94,7 +94,7 @@ export default class SplashScene extends Phaser.Scene {
     if (this.failedFiles && this.failedFiles.length > 0) {
       const header = this.add
         .text(16, height - 24 - this.failedFiles.length * 18, "Issues loading assets:", {
-          fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+          fontFamily: '"Bytebounce", system-ui, sans-serif',
           fontSize: "14px",
           color: "#ff6666",
         })
@@ -104,7 +104,7 @@ export default class SplashScene extends Phaser.Scene {
       this.failedFiles.forEach((key) => {
         this.add
           .text(16, y, `• ${key}`, {
-            fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+            fontFamily: '"Bytebounce", system-ui, sans-serif',
             fontSize: "12px",
             color: "#ff6666",
           })

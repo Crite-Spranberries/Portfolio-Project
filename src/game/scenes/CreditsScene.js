@@ -21,7 +21,7 @@ export default class CreditsScene extends Phaser.Scene {
     // Title (fixed above panel)
     this.add
       .text(centerX, 48, "Credits", {
-        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+        fontFamily: '"Bytebounce", system-ui, sans-serif',
         fontSize: "28px",
         color: "#ffffff",
       })
@@ -35,7 +35,7 @@ export default class CreditsScene extends Phaser.Scene {
     // Scrollable content container (position and mask set below)
     const content = this.add.container(centerX, panelY);
     const style = {
-      fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+      fontFamily: '"Bytebounce", system-ui, sans-serif',
       fontSize: "15px",
       color: "#d0d0d0",
     };
@@ -138,7 +138,7 @@ export default class CreditsScene extends Phaser.Scene {
     if (maxScroll > 0) {
       this.add
         .text(centerX, panelY + panelHeight / 2 - 28, "Scroll to see more", {
-          fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+          fontFamily: '"Bytebounce", system-ui, sans-serif',
           fontSize: "11px",
           color: "#666666",
         })

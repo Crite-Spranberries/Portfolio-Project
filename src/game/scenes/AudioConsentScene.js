@@ -20,7 +20,7 @@ export default class AudioConsentScene extends Phaser.Scene {
 
     this.add
       .text(width / 2, height / 2 - 60, "Enable audio?", {
-        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+        fontFamily: '"Bytebounce", system-ui, sans-serif',
         fontSize: "24px",
         color: "#ffffff",
       })

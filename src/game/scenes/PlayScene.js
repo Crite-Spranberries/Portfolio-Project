@@ -35,6 +35,14 @@ export default class PlayScene extends Phaser.Scene {
     this.shipNoseLength = 20;
     this.boostKey = null;
     this.pauseKey = null;
+    this.lastPointerMoveAt = 0;
+
+    // Control legend text objects (top‑left help copy)
+    this.controlsTextTitle = null;
+    this.controlsTextFire = null;
+    this.controlsTextBoost = null;
+    this.controlsTextMove = null;
+    this.controlsTextPause = null;
 
     // --- Boost meter state (resource & HUD) ---
     this.boostMeter = 1; // 0–1, starts full
@@ -63,6 +71,11 @@ export default class PlayScene extends Phaser.Scene {
       this.cursorTarget = new Phaser.Math.Vector2(x, y);
     } else {
       this.cursorTarget.set(x, y);
+    }
+
+    // Remember recent movement so we can highlight the "Move Cursor" legend.
+    if (this.time) {
+      this.lastPointerMoveAt = this.time.now;
     }
   }
 
@@ -281,7 +294,7 @@ export default class PlayScene extends Phaser.Scene {
 
     this.add
       .text(width - rightMargin, hudY - largeRadius - 16, "Spike's face", {
-        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+        fontFamily: '"Bytebounce", system-ui, sans-serif',
         fontSize: "14px",
         color: "#ffffff",
       })
@@ -329,18 +342,44 @@ export default class PlayScene extends Phaser.Scene {
       .setOrigin(0, 0.5);
 
     // Lightweight controls caption in the top‑left corner so players can see
-    // the keybinds at a glance.
-    this.add.text(
-      24,
-      24,
-      "CONTROLS:\n\n[LMB] Fire\n[E] Speed Boost\n[Move Cursor] Aim/Maneuver\n[ESC] Pause Game",
-      {
-        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
-        fontSize: "12px",
-        color: "#999999",
-        align: "left",
-      },
-    );
+    // the keybinds at a glance, with individual lines we can highlight.
+    const controlsX = 24;
+    let controlsY = 24;
+
+    const controlsStyleBase = {
+      fontFamily: '"Bytebounce", system-ui, sans-serif',
+      fontSize: "12px",
+      color: "#999999",
+      align: "left",
+    };
+
+    this.controlsTextTitle = this.add
+      .text(controlsX, controlsY, "CONTROLS:", controlsStyleBase)
+      .setOrigin(0, 0);
+
+    controlsY += 20;
+
+    this.controlsTextFire = this.add
+      .text(controlsX, controlsY, "[LMB] Fire", controlsStyleBase)
+      .setOrigin(0, 0);
+
+    controlsY += 16;
+
+    this.controlsTextBoost = this.add
+      .text(controlsX, controlsY, "[E] Speed Boost", controlsStyleBase)
+      .setOrigin(0, 0);
+
+    controlsY += 16;
+
+    this.controlsTextMove = this.add
+      .text(controlsX, controlsY, "[Move Cursor] Aim/Maneuver", controlsStyleBase)
+      .setOrigin(0, 0);
+
+    controlsY += 16;
+
+    this.controlsTextPause = this.add
+      .text(controlsX, controlsY, "[ESC] Pause Game", controlsStyleBase)
+      .setOrigin(0, 0);
 
     // When entering gameplay, show a 3-2-1-GO countdown overlay before
     // the player and ship start interacting.
@@ -392,6 +431,35 @@ export default class PlayScene extends Phaser.Scene {
     // Speed boost is driven by the E key, gated by the boost meter and cooldown.
     const isBoostKeyDown = !!this.boostKey?.isDown;
     const boostActive = this.updateBoostMeter(time, dt, isBoostKeyDown);
+
+    // Update control legend highlight state (orange when the relevant
+    // input is actively being used).
+    const COLOR_DEFAULT = "#999999";
+    const COLOR_ACTIVE = "#ffb347";
+
+    const pointer = this.input.activePointer;
+    const lmbActive =
+      !!pointer &&
+      typeof pointer.leftButtonDown === "function" &&
+      pointer.leftButtonDown();
+
+    const moveActive =
+      this.lastPointerMoveAt && time - this.lastPointerMoveAt < 150;
+
+    const escActive = !!this.pauseKey?.isDown;
+
+    if (this.controlsTextFire) {
+      this.controlsTextFire.setColor(lmbActive ? COLOR_ACTIVE : COLOR_DEFAULT);
+    }
+    if (this.controlsTextBoost) {
+      this.controlsTextBoost.setColor(boostActive ? COLOR_ACTIVE : COLOR_DEFAULT);
+    }
+    if (this.controlsTextMove) {
+      this.controlsTextMove.setColor(moveActive ? COLOR_ACTIVE : COLOR_DEFAULT);
+    }
+    if (this.controlsTextPause) {
+      this.controlsTextPause.setColor(escActive ? COLOR_ACTIVE : COLOR_DEFAULT);
+    }
 
     // ESC key also pauses, in addition to the on‑screen Pause button.
     if (this.pauseKey && Phaser.Input.Keyboard.JustDown(this.pauseKey)) {

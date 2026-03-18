@@ -28,7 +28,7 @@ export default class CountdownScene extends Phaser.Scene {
 
     const label = this.add
       .text(width / 2, height / 2, "", {
-        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+        fontFamily: '"Bytebounce", system-ui, sans-serif',
         fontSize: "48px",
         color: "#ffffff",
       })

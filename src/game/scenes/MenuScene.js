@@ -19,7 +19,7 @@ export default class MenuScene extends Phaser.Scene {
 
     this.add
       .text(width / 2, height / 4, "Swordfish Skirmish", {
-        fontFamily: '"ArcadeClassic", system-ui, sans-serif',
+        fontFamily: '"Bytebounce", system-ui, sans-serif',
         fontSize: "32px",
         color: "#ffffff",
       })
