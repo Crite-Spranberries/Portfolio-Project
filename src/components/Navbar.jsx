@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import logoFlat from "../assets/vectors/logo-a-white.svg";
 import "./Navbar.css";
 
-const SECTION_IDS = ["home", "services", "portfolio", "about"];
+const SECTION_IDS = ["home", "portfolio", "about"];
 
 function Navbar() {
   const { pathname } = useLocation();
@@ -49,15 +49,6 @@ function Navbar() {
       <li>
         <Link to="/" className={activeSection === "home" ? "active" : ""} onClick={closeMenu}>
           Home
-        </Link>
-      </li>
-      <li>
-        <Link
-          to="/#services"
-          className={activeSection === "services" ? "active" : ""}
-          onClick={closeMenu}
-        >
-          Services
         </Link>
       </li>
       <li>
