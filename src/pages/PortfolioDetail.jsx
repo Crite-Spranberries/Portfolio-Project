@@ -32,7 +32,7 @@ function DesignThinkingCarousel({ images }) {
           onClick={goPrev}
           aria-label="Previous image"
         >
-          ←
+          {"<"}
         </button>
         <button
           type="button"
@@ -40,7 +40,7 @@ function DesignThinkingCarousel({ images }) {
           onClick={goNext}
           aria-label="Next image"
         >
-          →
+          {">"}
         </button>
       </div>
     </div>
@@ -49,7 +49,6 @@ function DesignThinkingCarousel({ images }) {
 
 function renderCaseStudyBody(project) {
   switch (project.id) {
-    // Add case-study specific layouts here later
     default:
       return (
         <>
@@ -171,13 +170,32 @@ function renderProjectBody(project) {
         <h2 className="portfolio-detail-section__title portfolio-detail-section__title--center">
           {d.finalResult?.title ?? "Final Result"}
         </h2>
-        <div className="portfolio-final-frame">
-          {d.finalResult?.buttonText && (
-            <button type="button" className="portfolio-final-frame__button">
-              {d.finalResult.buttonText}
-            </button>
-          )}
-        </div>
+        {project.id === "can-product-design" && Array.isArray(d.finalResult?.dielines) ? (
+          <div className="portfolio-final-frame portfolio-final-frame--dielines">
+            {d.finalResult.dielines.map((src, idx) => (
+              <div key={src || idx} className="portfolio-final-frame__dieline">
+                <img src={src} alt="" loading="lazy" />
+              </div>
+            ))}
+          </div>
+        ) : project.id === "rockies-motion-graphic" && d.finalResult?.video ? (
+          <div className="portfolio-final-frame portfolio-final-frame--video">
+            <video
+              className="portfolio-final-video"
+              src={d.finalResult.video}
+              controls
+              preload="metadata"
+            />
+          </div>
+        ) : (
+          <div className="portfolio-final-frame">
+            {d.finalResult?.buttonText && (
+              <button type="button" className="portfolio-final-frame__button">
+                {d.finalResult.buttonText}
+              </button>
+            )}
+          </div>
+        )}
       </section>
     </>
   );

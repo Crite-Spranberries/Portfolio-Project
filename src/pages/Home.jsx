@@ -3,6 +3,14 @@ import { Link, useLocation } from "react-router-dom";
 import ScrollDownIcon from "../assets/vectors/scrolldown-icon.svg";
 import MailIcon from "../assets/vectors/mail-icon.svg";
 import MonkeyImg from "../assets/img/monkey.png";
+import photography_1 from "../assets/img/photography_1.jpg";
+import photography_2 from "../assets/img/photography_2.jpg";
+import photography_3 from "../assets/img/photography_3.jpg";
+import photography_4 from "../assets/img/photography_4.jpg";
+import photography_5 from "../assets/img/photography_5.jpg";
+import photography_6 from "../assets/img/photography_6.png";
+import photography_7 from "../assets/img/photography_7.jpg";
+import photography_8 from "../assets/img/photography_8.jpg";
 import {
   PORTFOLIO_CATEGORIES,
   PORTFOLIO_PROJECTS,
@@ -16,6 +24,17 @@ const HERO_LINE_1 = "Nice to meet you.";
 const HERO_LINE_2 = "I'm Sam.";
 const HERO_HEADING = `${HERO_LINE_1} ${HERO_LINE_2}`;
 const SHOW_PROFILE_IMAGE = false;
+
+const ABOUT_PHOTOS = [
+  { src: photography_1, caption: "Power lines near the Chilliwack River." },
+  { src: photography_2, caption: "Bridge over the Chilliwack River." },
+  { src: photography_3, caption: "Hatley Castle gardens." },
+  { src: photography_4, caption: "Bridge and water in B.C." },
+  { src: photography_5, caption: "Mini island view." },
+  { src: photography_6, caption: "Hatley Castle in the mist." },
+  { src: photography_7, caption: "Wood sculpture along the Malahat." },
+  { src: photography_8, caption: "Alley in Vancouver." },
+];
 
 function Home({ startTyping = true }) {
   const location = useLocation();
@@ -273,21 +292,7 @@ function Home({ startTyping = true }) {
         )}
       </section>
 
-      <section id="services" className="home-section home-section--services">
-        <div className="home-section__content">
-          <hr className="home-section-divider" aria-hidden />
-          <h2 className="home-section__title">Services</h2>
-          <p className="home-section__text">
-            My code monkey is constructing the "Services" section.. Stay tuned!
-          </p>
-          <img
-            src={MonkeyImg}
-            alt=""
-            className="home-section-monkey"
-            aria-hidden
-          />
-        </div>
-      </section>
+      {/* Services section intentionally hidden for now. */}
 
       <section id="portfolio" className="home-section home-section--portfolio">
         <div className="home-section__content home-section__content--portfolio">
@@ -297,7 +302,6 @@ function Home({ startTyping = true }) {
             <header className="portfolio-header">
               <h2 className="portfolio-title">Portfolio</h2>
             </header>
-
             <div
               className="portfolio-pills"
               role="tablist"
@@ -360,34 +364,54 @@ function Home({ startTyping = true }) {
       </section>
 
       <section id="about" className="home-section home-section--about">
-        <div className="home-section__content">
+        <div className="home-section__content home-section__content--about">
           <hr className="home-section-divider" aria-hidden />
-          <h2 className="home-section__title">About Me</h2>
-          <p className="home-section__text">
-            My code monkey is constructing the "About Me" section.. Stay tuned!
-            {/* Hi! I'm a Canadian front-end developer and website designer based in
-            Surrey, B.C. When I'm not making web experiences or little projects,
-            you might find me out on a nature walk checking out the local
-            scenery, or visiting a music bar. If you can't find me enjoying the
-            above, I'm probably enjoying a nap.. Otherwise, *seriously
-            speaking*, I like to play the electric bass, print, paint, and make
-            cosplay props, and play the occasional video game (I'm in a bit of a
-            Helldivers II phase at the moment).
-            <br></br>
-            <br></br>
-            Development ventures aside, I've been taking up Voice Acting as a
-            hobby since 2024. My latest V/O ventures can be explored{" "}
-            <Link to="/#voice-acting" className="home-here-link">
-              here
-            </Link>
-            . */}
-            <img
-              src={MonkeyImg}
-              alt=""
-              className="home-section-monkey"
-              aria-hidden
-            />
-          </p>
+          <div className="about-layout">
+            <div className="about-photos" aria-label="Personal photography">
+              {ABOUT_PHOTOS.map((photo, i) => (
+                <figure
+                  key={i}
+                  className="about-photo"
+                  style={{ "--photo-index": i }}
+                >
+                  <div className="about-photo__frame">
+                    <img
+                      src={photo.src}
+                      alt=""
+                      loading="lazy"
+                      className="about-photo__img"
+                    />
+                  </div>
+                  <figcaption className="about-photo__caption">
+                    {photo.caption}
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <div className="about-text">
+              <h2 className="home-section__title">About Me</h2>
+              <p className="home-section__text">
+                Hi! I&apos;m a Canadian front-end developer and website designer
+                based in Surrey, B.C. I like to make web experiences that
+                communicate authenticity, and feel organic. When I&apos;m not
+                making websites or little projects, you might find me out on a
+                river walk, taking nature photos, or visiting a music bar. If
+                you can&apos;t find me enjoying the above, I&apos;m probably
+                enjoying a good nap. Otherwise, seriously speaking, I like to
+                play the electric bass, print, paint, make cosplay props, and
+                play the occasional video game (I&apos;m in a bit of a
+                Helldivers II phase at the moment).
+                <br />
+                <br />
+                Additionally, I&apos;ve been taking up Voice Acting as a hobby
+                since 2024. My latest V/O ventures can be explored{" "}
+                <Link to="/#voice-acting" className="home-here-link">
+                  here (link under construction){" "}
+                </Link>
+                .
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 

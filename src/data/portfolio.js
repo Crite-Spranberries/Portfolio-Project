@@ -1,5 +1,9 @@
 import MonkeyImg from "../assets/img/monkey.png";
 import PlaceholderImg from "../assets/img/placeholder.jpg";
+import GingerDieline from "../assets/img/Ginger Juice Variant@2x.png";
+import PickleDieline from "../assets/img/Pickle Juice Variant@2x.png";
+import TomatoDieline from "../assets/img/Tomato Juice Variant@2x.png";
+import RockiesVideo from "../assets/videos/Final Project 2295.mov";
 
 export const PORTFOLIO_CATEGORIES = [
   { id: "all", label: "All", type: "all" },
@@ -17,6 +21,12 @@ export const PORTFOLIO_CATEGORIES = [
     type: "tag",
     tag: "Product Design",
   },
+  {
+    id: "motion-graphics",
+    label: "Motion Graphics",
+    type: "tag",
+    tag: "Motion Graphics",
+  },
 ];
 
 /** Order for displaying category pills on cards (first in list appears first). */
@@ -26,6 +36,7 @@ export const PILL_DISPLAY_ORDER = [
   "Web Devt.",
   "Graphic Design",
   "Product Design",
+  "Motion Graphics",
   "Full Stack Development",
   "Packaging",
   "Branding",
@@ -151,7 +162,7 @@ export const PORTFOLIO_PROJECTS = [
       },
       finalResult: {
         title: "Final Result",
-        buttonText: "Preview Dielines",
+        dielines: [GingerDieline, PickleDieline, TomatoDieline],
       },
     },
   },
@@ -196,6 +207,48 @@ export const PORTFOLIO_PROJECTS = [
       finalResult: {
         title: "Final Result",
         buttonText: "Preview Website",
+      },
+    },
+  },
+  {
+    id: "rockies-motion-graphic",
+    title: '"Rockies" Motion Graphic',
+    category: "motion-graphics",
+    kind: "project",
+    tags: ["Graphic Design", "Motion Graphics"],
+    image: PlaceholderImg,
+    detail: {
+      role: "Motion Designer",
+      tools: [
+        { short: "Ae", label: "Adobe After Effects" },
+        { short: "Ai", label: "Adobe Illustrator" },
+      ],
+      overview: {
+        title: "Project Overview",
+        text:
+          'A short motion graphic inspired by vintage "Rockies" title cards. ' +
+          "This placeholder entry can be updated later with final frames, " +
+          "process notes, and a video embed once the piece is complete.",
+      },
+      designThinking: {
+        text:
+          "This section will eventually describe the concept, visual language, " +
+          "and animation direction for the Rockies motion graphic.",
+        contextText:
+          "For now this is a lightweight placeholder so the card appears " +
+          "consistently in the portfolio grid.",
+        carousel: [PlaceholderImg],
+      },
+      conceptRationale: {
+        title: "Concept & Rationale",
+        text:
+          "Planned as a stylized bumper that combines bold typography, parallax " +
+          "landscape layers, and grainy film texture to capture the feeling of " +
+          "a late‑night cable movie intro.",
+      },
+      finalResult: {
+        title: "Final Result",
+        video: RockiesVideo,
       },
     },
   },
