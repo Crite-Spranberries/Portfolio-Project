@@ -1,0 +1,161 @@
+/* Match the blurred background treatment used on other pages. */
+.bebop-page {
+  position: relative;
+  min-height: 100vh;
+  padding-top: calc(88px + 2.5rem);
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 5rem;
+  box-sizing: border-box;
+  color: white;
+  overflow-x: clip;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.bebop-page::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(50, 50, 50, 0.7) 100%),
+    url("/src/assets/img/Van_ExpoBuilding.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(4px);
+}
+
+/* Main Bebop content container: similar width/padding as Home page sections, with softened Cowboy Bebop title background */
+.bebop-game-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 60vh;
+  position: relative;
+  /* Darken more toward the bottom so the lower edge is fully opaque,
+     while keeping some transparency toward the top. */
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.6) 50%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  padding: 2.5rem var(--page-padding) 2.5rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.bebop-game-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Soft, blurred Cowboy Bebop title image inside the container */
+.bebop-game-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("/src/assets/img/cowboy-bebop-title-graphic.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  filter: blur(2px);
+  opacity: 0.5; /* softer overall so top feels lighter, gradient below handles full opacity at bottom */
+  z-index: 0;
+}
+
+/* Black 16:9 viewport placeholder for Phaser game; responsive desktop to mobile */
+.bebop-game-viewport {
+  width: 100%;
+  max-width: 960px;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.bebop-game-root canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Project description section: continues black area below game for copy, images, tech stack, etc. */
+.bebop-game-description {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto 0;
+  background: #000;
+  padding: 2.5rem var(--page-padding) 3.5rem;
+  box-sizing: border-box;
+}
+
+.bebop-game-description-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+/* Two-column description rows using the same 12-col grid system as Home */
+.bebop-desc-row {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-columns), 1fr);
+  gap: var(--grid-gutter);
+  align-items: flex-start;
+}
+
+.bebop-desc-media {
+  grid-column: 2 / 7;
+  min-height: 180px; /* visual placeholder space for future images */
+}
+
+.bebop-desc-copy {
+  grid-column: 7 / 12;
+}
+
+/* Alternate layout where media appears on the right, copy on the left */
+.bebop-desc-row--reverse .bebop-desc-media {
+  grid-column: 7 / 12;
+}
+
+.bebop-desc-row--reverse .bebop-desc-copy {
+  grid-column: 2 / 7;
+}
+
+.bebop-game-description h2,
+.bebop-game-description h3 {
+  margin: 0 0 0.75rem;
+}
+
+.bebop-game-description p {
+  margin: 0;
+  color: #d0d0d0;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .bebop-game-viewport {
+    max-width: 100%;
+    border-radius: 0;
+  }
+
+  .bebop-desc-row {
+    grid-template-columns: 1fr;
+  }
+
+  .bebop-desc-media,
+  .bebop-desc-copy,
+  .bebop-desc-row--reverse .bebop-desc-media,
+  .bebop-desc-row--reverse .bebop-desc-copy {
+    grid-column: 1 / -1;
+  }
+}

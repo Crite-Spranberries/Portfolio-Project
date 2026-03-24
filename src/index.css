@@ -1,4 +1,12 @@
 @font-face {
+  font-family: "Bytebounce";
+  src: url("/src/assets/fonts/ByteBounce.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Epilogue";
   src: url("/src/assets/fonts/Epilogue-Light.otf") format("opentype");
   font-weight: 300;

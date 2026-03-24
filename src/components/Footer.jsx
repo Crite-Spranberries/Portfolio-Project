@@ -60,7 +60,11 @@ function Footer() {
 
           <div className="footer-column">
             <h3 className="footer-heading">Links:</h3>
-            <p className="footer-text">No links yet...</p>
+            <p className="footer-text">
+              <Link to="/bebop" className="home-here-link">
+                Click me to bebop!
+              </Link>
+            </p>
           </div>
 
           <div className="footer-column footer-column-contact">
