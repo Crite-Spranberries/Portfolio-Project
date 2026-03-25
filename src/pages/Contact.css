@@ -6,11 +6,11 @@
   flex-direction: column;
   justify-content: center;
   padding: calc(88px + var(--page-padding)) var(--page-padding) 4rem;
+  /* Break out of .app-main padding; do not pair max-width: 100% with negative horizontal margin. */
   margin: calc(var(--page-padding) * -1);
   box-sizing: border-box;
   color: white;
   overflow-x: clip;
-  max-width: 100%;
   min-width: 0;
 }
 

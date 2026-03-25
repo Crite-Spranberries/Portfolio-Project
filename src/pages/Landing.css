@@ -4,10 +4,10 @@
   min-height: 100vh;
   color: white;
   padding: calc(88px + var(--page-padding)) var(--page-padding) 3rem;
+  /* Break out of .app-main padding; do not pair max-width: 100% with negative horizontal margin. */
   margin: calc(var(--page-padding) * -1);
   box-sizing: border-box;
   overflow-x: clip;
-  max-width: 100%;
   min-width: 0;
 }
 

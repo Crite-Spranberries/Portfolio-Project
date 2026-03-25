@@ -3,6 +3,8 @@
   top: 0;
   left: 0;
   right: 0;
+  width: 100%;
+  max-width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -214,7 +216,8 @@
 /* Responsive: mobile */
 @media (max-width: 768px) {
   .navbar {
-    padding: 0.75rem 1.25rem;
+    padding: 0.75rem max(1.25rem, env(safe-area-inset-right, 0px)) 0.75rem
+      max(1.25rem, env(safe-area-inset-left, 0px));
   }
 
   .navbar-logo {
