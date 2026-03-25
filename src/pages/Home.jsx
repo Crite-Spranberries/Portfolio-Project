@@ -11,6 +11,7 @@ import photography_5 from "../assets/img/photography_5.jpg";
 import photography_6 from "../assets/img/photography_6.png";
 import photography_7 from "../assets/img/photography_7.jpg";
 import photography_8 from "../assets/img/photography_8.jpg";
+import ResumePDF from "../assets/personalfiles/Samuel_Chua_Assignment02-Resume.pdf";
 import {
   PORTFOLIO_CATEGORIES,
   PORTFOLIO_PROJECTS,
@@ -24,6 +25,7 @@ const HERO_LINE_1 = "Nice to meet you.";
 const HERO_LINE_2 = "I'm Sam.";
 const HERO_HEADING = `${HERO_LINE_1} ${HERO_LINE_2}`;
 const SHOW_PROFILE_IMAGE = false;
+const RESUME_URL = ResumePDF;
 
 const ABOUT_PHOTOS = [
   { src: photography_1, caption: "Power lines near the Chilliwack River." },
@@ -243,7 +245,12 @@ function Home({ startTyping = true }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon"
+                title="Github"
+                aria-label="Github"
               >
+                <span className="social-tooltip" role="tooltip">
+                  Github
+                </span>
                 <svg
                   width="32"
                   height="32"
@@ -258,7 +265,12 @@ function Home({ startTyping = true }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="social-icon"
+                title="LinkedIn"
+                aria-label="LinkedIn"
               >
+                <span className="social-tooltip" role="tooltip">
+                  LinkedIn
+                </span>
                 <svg
                   width="32"
                   height="32"
@@ -272,8 +284,33 @@ function Home({ startTyping = true }) {
                 href="mailto:s22bchua@gmail.com"
                 className="social-icon"
                 aria-label="Email Samuel"
+                title="Email"
               >
+                <span className="social-tooltip" role="tooltip">
+                  Email
+                </span>
                 <img src={MailIcon} alt="" width={32} height={32} />
+              </a>
+              <a
+                href={RESUME_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="social-icon"
+                aria-label="Resume Samuel"
+                title="Resume"
+              >
+                <span className="social-tooltip" role="tooltip">
+                  Resume
+                </span>
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path d="M6 2h9l5 5v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm8 1.5V8h4.5L14 3.5zM8 12h8v2H8v-2zm0 4h8v2H8v-2z" />
+                </svg>
               </a>
             </div>
             <Link to="/#portfolio" className="cta-button">
@@ -401,14 +438,6 @@ function Home({ startTyping = true }) {
                 play the electric bass, print, paint, make cosplay props, and
                 play the occasional video game (I&apos;m in a bit of a
                 Helldivers II phase at the moment).
-                <br />
-                <br />
-                Additionally, I&apos;ve been taking up Voice Acting as a hobby
-                since 2024. My latest V/O ventures can be explored{" "}
-                <Link to="/#voice-acting" className="home-here-link">
-                  here (link under construction){" "}
-                </Link>
-                .
               </p>
             </div>
           </div>
