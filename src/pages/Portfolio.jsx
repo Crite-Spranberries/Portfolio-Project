@@ -62,9 +62,10 @@ function Portfolio() {
         >
           {visiblePortfolioCategories.map((category) => {
             const isAll = category.id === "all";
+            const showAllProjects = selectedPortfolioFilterIds.length === 0;
             const isActive = isAll
-              ? selectedPortfolioFilterIds.length === 0
-              : selectedPortfolioFilterIds.includes(category.id);
+              ? showAllProjects
+              : showAllProjects || selectedPortfolioFilterIds.includes(category.id);
             return (
               <button
                 key={category.id}
@@ -82,7 +83,6 @@ function Portfolio() {
                         : [...prev, category.id],
                     );
                   }
-                  setShowAllPortfolioFilters(false);
                 }}
                 aria-pressed={isActive}
               >

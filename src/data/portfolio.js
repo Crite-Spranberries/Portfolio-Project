@@ -43,7 +43,12 @@ import CanDetail4 from "../assets/img/can_detail4.png";
 
 export const PORTFOLIO_CATEGORIES = [
   { id: "all", label: "All", type: "all" },
-  { id: "web", label: "Web Devt.", type: "category" },
+  {
+    id: "web",
+    label: "Web Devt.",
+    type: "tag",
+    tag: "Web Devt.",
+  },
   { id: "uiux", label: "UI/UX Design", type: "category" },
   {
     id: "graphic",
@@ -180,7 +185,7 @@ export const PORTFOLIO_PROJECTS = [
     title: "SAFESPACE APP",
     category: "uiux",
     kind: "case-study",
-    tags: ["Full Stack Development", "UI/UX Design", "App Design"],
+    tags: ["Full Stack Development", "UI/UX Design", "App Design", "Web Devt."],
     image: PlaceholderImg,
     detail: {
       role: "Lead Full Stack Developer",
@@ -216,7 +221,7 @@ export const PORTFOLIO_PROJECTS = [
         text: "..." + "...",
       },
       finalResult: {
-        title: "FINAL RESULT",
+        title: "FINAL PRODUCT",
         buttonText: "View prototype",
       },
     },
@@ -274,7 +279,7 @@ export const PORTFOLIO_PROJECTS = [
           "marketing a niche brand to appeal to the public eye.",
       },
       finalResult: {
-        title: "FINAL RESULT (DIELINES)",
+        title: "FINAL PRODUCTS (DIELINES)",
         dielines: [GingerDieline, PickleDieline, TomatoDieline],
       },
     },
@@ -417,12 +422,12 @@ export const PORTFOLIO_PROJECTS = [
       conceptRationale: {
         title: "CONCEPT & RATIONALE",
         text:
-          "The final result of this project exercises the ability to create motion graphics that flow consistently," +
+          "The final product of this project exercises the ability to create motion graphics that flow consistently," +
           " incorporating vector graphics and " +
           "strategically used visual effects to make a structured composition with a clear narrative.",
       },
       finalResult: {
-        title: "FINAL RESULT",
+        title: "FINAL PRODUCT",
         video: RockiesVideo,
       },
     },
@@ -456,7 +461,7 @@ export const PORTFOLIO_PROJECTS = [
         text: "The final output is a structured but simple poster set that guides the viewer's eye from headline to supporting details, reinforcing both clarity and brand identity of \"Copper Co\"'s services.",
       },
       finalResult: {
-        title: "FINAL RESULT",
+        title: "FINAL PRODUCTS",
         posters: [AdPoster1, AdPoster2, AdPoster3],
       },
     },

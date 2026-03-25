@@ -37,7 +37,7 @@ const MONTRO_PROGRESS_ITEMS = [
   { id: "montro-process", label: "Process" },
   { id: "montro-design", label: "Design" },
   { id: "montro-development", label: "Development" },
-  { id: "montro-takeaways", label: "Takeaways" },
+  { id: "montro-takeaways", label: "Final products" },
 ];
 
 /** Viewport line from top: last section whose top is at or above this line is active (stable scroll-spy). */
@@ -749,7 +749,7 @@ function renderDetailWithBleed(project, useFullBleedLayout) {
         {project.id === "can-product-design" && Array.isArray(d.finalResult?.dielines) ? (
           <div className="portfolio-final-frame portfolio-final-frame--dielines">
             <h1 className="portfolio-detail__title portfolio-final-frame__header">
-              {d.finalResult?.title ?? "FINAL RESULT"}
+              {d.finalResult?.title ?? "FINAL PRODUCTS"}
             </h1>
             {d.finalResult.dielines.map((src, idx) => (
               <div key={src || idx} className="portfolio-final-frame__dieline">
@@ -760,7 +760,7 @@ function renderDetailWithBleed(project, useFullBleedLayout) {
         ) : Array.isArray(d.finalResult?.posters) ? (
           <div className="portfolio-final-frame portfolio-final-frame--dielines">
             <h1 className="portfolio-detail__title portfolio-final-frame__header">
-              {d.finalResult?.title ?? "FINAL RESULT"}
+              {d.finalResult?.title ?? "FINAL PRODUCTS"}
             </h1>
             {d.finalResult.posters.map((src, idx) => (
               <div
@@ -778,7 +778,7 @@ function renderDetailWithBleed(project, useFullBleedLayout) {
           d.finalResult.linkPair.right.image ? (
             <div className="portfolio-final-frame portfolio-final-frame--composite">
               <h1 className="portfolio-detail__title portfolio-final-frame__header">
-                FINAL RESULTS
+                {d.finalResult?.title ?? "FINAL PRODUCTS"}
               </h1>
               <div className="portfolio-final-link-pair-row">
                 <FinalLinkPairCard
@@ -796,9 +796,7 @@ function renderDetailWithBleed(project, useFullBleedLayout) {
                 <h3
                   className="portfolio-detail-section__title--personas portfolio-final-video-stack__title"
                 >
-                  {d.finalResult.videoTitle ??
-                    d.finalResult.title ??
-                    "PROMO VIDEO"}
+                  {d.finalResult.videoTitle ?? "PROMO VIDEO"}
                 </h3>
                 <video
                   className="portfolio-final-video"
@@ -811,7 +809,7 @@ function renderDetailWithBleed(project, useFullBleedLayout) {
           ) : (
             <div className="portfolio-final-frame portfolio-final-frame--video">
               <h1 className="portfolio-detail__title portfolio-final-frame__header">
-                {d.finalResult?.title ?? "FINAL RESULT"}
+                {d.finalResult?.title ?? "FINAL PRODUCT"}
               </h1>
               <video
                 className="portfolio-final-video"
@@ -824,7 +822,7 @@ function renderDetailWithBleed(project, useFullBleedLayout) {
         ) : (
           <div className="portfolio-final-frame portfolio-final-frame--button">
             <h1 className="portfolio-detail__title portfolio-final-frame__header">
-              {d.finalResult?.title ?? "FINAL RESULT"}
+              {d.finalResult?.title ?? "FINAL PRODUCT"}
             </h1>
             {d.finalResult?.buttonText && (
               <button type="button" className="portfolio-final-frame__button">
@@ -909,7 +907,10 @@ function PortfolioDetail() {
         id: getSectionAnchorId(project, "development"),
         label: d.conceptRationale?.title ?? "CONCEPT & RATIONALE",
       },
-      { id: getSectionAnchorId(project, "takeaways"), label: "FINAL RESULTS" },
+      {
+        id: getSectionAnchorId(project, "takeaways"),
+        label: d.finalResult?.title ?? "FINAL PRODUCTS",
+      },
     );
 
     return sections;
@@ -922,6 +923,7 @@ function PortfolioDetail() {
     project.detail?.prototypeFlows,
     project.detail?.prototypeFlows?.title,
     project.detail?.conceptRationale?.title,
+    project.detail?.finalResult?.title,
   ]);
 
   return (

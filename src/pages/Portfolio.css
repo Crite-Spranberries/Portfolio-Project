@@ -105,11 +105,25 @@
   transform: none;
 }
 
+/* Fixed column counts (not auto-fit): sparse filters keep card width — one card stays 1/3 row, not full width */
 .portfolio-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1.75rem;
   margin-top: 0.5rem;
+  align-items: stretch;
+}
+
+@media (max-width: 900px) {
+  .portfolio-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .portfolio-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .portfolio-empty-filters {

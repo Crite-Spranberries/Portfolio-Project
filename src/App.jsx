@@ -2,14 +2,15 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from "react-route
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Portfolio from "./pages/Portfolio";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
-import Landing from "./pages/Landing";
-import NotFound from "./pages/NotFound";
-import PortfolioDetail from "./pages/PortfolioDetail";
 import "./App.css";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
+
+const Portfolio = lazy(() => import("./pages/Portfolio"));
+const PortfolioDetail = lazy(() => import("./pages/PortfolioDetail"));
+const About = lazy(() => import("./pages/About"));
+const Contact = lazy(() => import("./pages/Contact"));
+const Landing = lazy(() => import("./pages/Landing"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const NAVBAR_OFFSET = 88;
 
@@ -62,15 +63,22 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const handlePointerMove = (event) => {
+    let rafId = 0;
+    let pendingEvent = null;
+
+    const flush = () => {
+      rafId = 0;
+      const event = pendingEvent;
+      if (!event) return;
+      pendingEvent = null;
+
       const { innerWidth, innerHeight } = window;
       if (!innerWidth || !innerHeight) return;
 
       const normX = event.clientX / innerWidth - 0.5;
       const normY = event.clientY / innerHeight - 0.5;
 
-      // Very subtle parallax, opposite to cursor
-      const maxShift = 10; // px; lower = gentler
+      const maxShift = 10;
 
       const x = (-normX * 2 * maxShift).toFixed(2);
       const y = (-normY * 2 * maxShift).toFixed(2);
@@ -79,8 +87,18 @@ function App() {
       document.documentElement.style.setProperty("--bg-shift-y", `${y}px`);
     };
 
+    const handlePointerMove = (event) => {
+      pendingEvent = event;
+      if (!rafId) {
+        rafId = requestAnimationFrame(flush);
+      }
+    };
+
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
-    return () => window.removeEventListener("pointermove", handlePointerMove);
+    return () => {
+      window.removeEventListener("pointermove", handlePointerMove);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   useEffect(() => {
@@ -106,15 +124,17 @@ function App() {
         <Navbar />
 
         <main className="app-main">
-          <Routes>
-            <Route path="/" element={<Home startTyping={!showSplash} />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            <Route path="/portfolio/:projectId" element={<PortfolioDetail />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/landing" element={<Landing />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={<Home startTyping={!showSplash} />} />
+              <Route path="/portfolio" element={<Portfolio />} />
+              <Route path="/portfolio/:projectId" element={<PortfolioDetail />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/landing" element={<Landing />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </main>
 
         <Footer />

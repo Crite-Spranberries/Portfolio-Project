@@ -44,11 +44,11 @@ function Home({ startTyping = true }) {
   const [headingText, setHeadingText] = useState("");
   const [showContentAfterTyping, setShowContentAfterTyping] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
-  const [scrollDarken, setScrollDarken] = useState(0);
   const [selectedPortfolioFilterIds, setSelectedPortfolioFilterIds] = useState(
     [],
   );
   const [showAllPortfolioFilters, setShowAllPortfolioFilters] = useState(false);
+  /** Enlarged about-photo dialog; used by JSX + body scroll lock effect below. */
   const [aboutLightbox, setAboutLightbox] = useState(null);
   const aboutPhotoLastTapRef = useRef({ time: 0, index: -1 });
   const portfolioSectionRef = useRef(null);
@@ -197,7 +197,7 @@ function Home({ startTyping = true }) {
     };
 
     resetIdleTimer();
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -206,24 +206,6 @@ function Home({ startTyping = true }) {
       }
     };
   }, [startTyping]);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const services = document.getElementById("services");
-      if (!services) return;
-      const rect = services.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
-      const servicesTop = rect.top;
-      const progress = Math.max(
-        0,
-        Math.min(1, 1 - servicesTop / (viewportHeight * 0.8)),
-      );
-      setScrollDarken(progress * 0.6);
-    };
-    handleScroll();
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     if (!aboutLightbox) return undefined;
@@ -333,11 +315,6 @@ function Home({ startTyping = true }) {
 
   return (
     <div className="home">
-      <div
-        className="home-scroll-overlay"
-        style={{ opacity: scrollDarken }}
-        aria-hidden
-      />
       <section
         id="home"
         className={`hero ${showContentAfterTyping ? "hero--reveal" : ""}`}
@@ -470,9 +447,10 @@ function Home({ startTyping = true }) {
             >
               {visiblePortfolioCategories.map((category) => {
                 const isAll = category.id === "all";
+                const showAllProjects = selectedPortfolioFilterIds.length === 0;
                 const isActive = isAll
-                  ? selectedPortfolioFilterIds.length === 0
-                  : selectedPortfolioFilterIds.includes(category.id);
+                  ? showAllProjects
+                  : showAllProjects || selectedPortfolioFilterIds.includes(category.id);
                 return (
                   <button
                     key={category.id}
@@ -490,7 +468,6 @@ function Home({ startTyping = true }) {
                             : [...prev, category.id],
                         );
                       }
-                      setShowAllPortfolioFilters(false);
                     }}
                     aria-pressed={isActive}
                   >
