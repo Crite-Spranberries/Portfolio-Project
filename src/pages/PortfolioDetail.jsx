@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import "./Portfolio.css";
 import {
@@ -9,11 +9,37 @@ import {
 
 function DesignThinkingCarousel({ images }) {
   const [index, setIndex] = useState(0);
+  const [imageOpacity, setImageOpacity] = useState(1);
+  const pendingIndexRef = useRef(null);
   const n = images.length;
   if (!n) return null;
 
-  const goPrev = () => setIndex((i) => (i - 1 + n) % n);
-  const goNext = () => setIndex((i) => (i + 1) % n);
+  const goPrev = () => {
+    if (pendingIndexRef.current !== null) return;
+    const next = (index - 1 + n) % n;
+    if (next === index) return;
+    pendingIndexRef.current = next;
+    setImageOpacity(0);
+  };
+
+  const goNext = () => {
+    if (pendingIndexRef.current !== null) return;
+    const next = (index + 1) % n;
+    if (next === index) return;
+    pendingIndexRef.current = next;
+    setImageOpacity(0);
+  };
+
+  const handleImageTransitionEnd = (e) => {
+    if (e.propertyName !== "opacity") return;
+    const pending = pendingIndexRef.current;
+    if (pending === null) return;
+    pendingIndexRef.current = null;
+    setIndex(pending);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => setImageOpacity(1));
+    });
+  };
 
   return (
     <div className="portfolio-detail-carousel">
@@ -21,9 +47,16 @@ function DesignThinkingCarousel({ images }) {
         <img
           src={images[index]}
           alt=""
-          className="portfolio-detail-image"
+          className="portfolio-detail-image portfolio-detail-carousel__image"
           loading="lazy"
+          style={{ opacity: imageOpacity }}
+          onTransitionEnd={handleImageTransitionEnd}
         />
+        <div className="portfolio-detail-carousel__counter-wrap" aria-hidden="true">
+          <span className="portfolio-detail-carousel__counter">
+            {index + 1}/{n}
+          </span>
+        </div>
       </div>
       <div className="portfolio-detail-carousel__controls">
         <button
@@ -94,12 +127,12 @@ function renderProjectBody(project) {
     <>
       <section className="portfolio-detail-section portfolio-detail-section--split">
         <div className="portfolio-detail-column">
-          <h2 className="portfolio-detail-section__title">Role(s)</h2>
+          <h2 className="portfolio-detail-section__title">ROLE(S)</h2>
           <p className="portfolio-detail__text">{d.role}</p>
         </div>
 
         <div className="portfolio-detail-column portfolio-detail-column--right">
-          <h2 className="portfolio-detail-section__title">Tools</h2>
+          <h2 className="portfolio-detail-section__title">TOOLS</h2>
           <ul className="portfolio-tools">
             {(d.tools || []).map((tool, i) => (
               <li key={i} className="portfolio-tool">
@@ -128,7 +161,7 @@ function renderProjectBody(project) {
 
       <section className="portfolio-detail-section">
         <h2 className="portfolio-detail-section__title">
-          {d.overview?.title ?? "Overview"}
+          {d.overview?.title ?? "OVERVIEW"}
         </h2>
         <p className="portfolio-detail__text">{d.overview?.text}</p>
       </section>
@@ -144,7 +177,7 @@ function renderProjectBody(project) {
           </div>
 
           <div className="portfolio-detail-column">
-            <h2 className="portfolio-detail-section__title">Design Thinking</h2>
+            <h2 className="portfolio-detail-section__title">DESIGN THINKING</h2>
             <p className="portfolio-detail__text">{d.designThinking?.text}</p>
             {d.designThinking?.contextText && (
               <p className="portfolio-detail__text portfolio-context__text">
@@ -161,25 +194,42 @@ function renderProjectBody(project) {
     <>
       <section className="portfolio-detail-section">
         <h2 className="portfolio-detail-section__title">
-          {d.conceptRationale?.title ?? "Concept & Rationale"}
+          {d.conceptRationale?.title ?? "CONCEPT & RATIONALE"}
         </h2>
         <p className="portfolio-detail__text">{d.conceptRationale?.text}</p>
       </section>
 
       <section className="portfolio-detail-section portfolio-detail-section--final">
-        <h2 className="portfolio-detail-section__title portfolio-detail-section__title--center">
-          {d.finalResult?.title ?? "Final Result"}
-        </h2>
         {project.id === "can-product-design" && Array.isArray(d.finalResult?.dielines) ? (
           <div className="portfolio-final-frame portfolio-final-frame--dielines">
+            <h1 className="portfolio-detail__title portfolio-final-frame__header">
+              {d.finalResult?.title ?? "FINAL RESULT"}
+            </h1>
             {d.finalResult.dielines.map((src, idx) => (
               <div key={src || idx} className="portfolio-final-frame__dieline">
                 <img src={src} alt="" loading="lazy" />
               </div>
             ))}
           </div>
-        ) : project.id === "rockies-motion-graphic" && d.finalResult?.video ? (
+        ) : Array.isArray(d.finalResult?.posters) ? (
+          <div className="portfolio-final-frame portfolio-final-frame--dielines">
+            <h1 className="portfolio-detail__title portfolio-final-frame__header">
+              {d.finalResult?.title ?? "FINAL RESULT"}
+            </h1>
+            {d.finalResult.posters.map((src, idx) => (
+              <div
+                key={src || idx}
+                className="portfolio-final-frame__poster-preview"
+              >
+                <img src={src} alt={`Poster preview ${idx + 1}`} loading="lazy" />
+              </div>
+            ))}
+          </div>
+        ) : d.finalResult?.video ? (
           <div className="portfolio-final-frame portfolio-final-frame--video">
+            <h1 className="portfolio-detail__title portfolio-final-frame__header">
+              {d.finalResult?.title ?? "FINAL RESULT"}
+            </h1>
             <video
               className="portfolio-final-video"
               src={d.finalResult.video}
@@ -188,7 +238,10 @@ function renderProjectBody(project) {
             />
           </div>
         ) : (
-          <div className="portfolio-final-frame">
+          <div className="portfolio-final-frame portfolio-final-frame--button">
+            <h1 className="portfolio-detail__title portfolio-final-frame__header">
+              {d.finalResult?.title ?? "FINAL RESULT"}
+            </h1>
             {d.finalResult?.buttonText && (
               <button type="button" className="portfolio-final-frame__button">
                 {d.finalResult.buttonText}
@@ -254,7 +307,7 @@ function PortfolioDetail() {
       <div className="portfolio-detail__inner">
         <header className="portfolio-detail__header">
           <p className="portfolio-detail__eyebrow">
-            {isCaseStudy ? "Case study" : "Project"}
+            {isCaseStudy ? "CASE STUDY" : "PROJECT"}
           </p>
           <h1 className="portfolio-detail__title">{project.title}</h1>
           {(() => {

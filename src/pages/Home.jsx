@@ -45,6 +45,7 @@ function Home({ startTyping = true }) {
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [scrollDarken, setScrollDarken] = useState(0);
   const [portfolioCategory, setPortfolioCategory] = useState("all");
+  const [showAllPortfolioFilters, setShowAllPortfolioFilters] = useState(false);
 
   const visiblePortfolioProjects = useMemo(() => {
     const currentFilter = PORTFOLIO_CATEGORIES.find(
@@ -71,6 +72,26 @@ function Home({ startTyping = true }) {
 
     return PORTFOLIO_PROJECTS;
   }, [portfolioCategory]);
+
+  const hasMorePortfolioFilters = PORTFOLIO_CATEGORIES.length > 3;
+  const visiblePortfolioCategories = useMemo(() => {
+    if (!hasMorePortfolioFilters || showAllPortfolioFilters) {
+      return PORTFOLIO_CATEGORIES;
+    }
+
+    const firstThree = PORTFOLIO_CATEGORIES.slice(0, 3);
+    const activeIndex = PORTFOLIO_CATEGORIES.findIndex(
+      (category) => category.id === portfolioCategory,
+    );
+
+    // If the active category isn't within the first 3, swap the 3rd pill
+    // with the active one so the selection stays visible.
+    if (activeIndex >= 3) {
+      return [firstThree[0], firstThree[1], PORTFOLIO_CATEGORIES[activeIndex]];
+    }
+
+    return firstThree;
+  }, [hasMorePortfolioFilters, portfolioCategory, showAllPortfolioFilters]);
 
   useEffect(() => {
     if (!location.hash || location.hash === "#") {
@@ -211,6 +232,67 @@ function Home({ startTyping = true }) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const container = document.querySelector(".about-photos");
+    if (!container) return;
+
+    const photos = Array.from(container.querySelectorAll(".about-photo"));
+    if (photos.length === 0) return;
+
+    let activeEl = null;
+    let containerRect = null;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    const handlePointerMove = (e) => {
+      if (!activeEl || !containerRect) return;
+
+      const newLeft = e.clientX - containerRect.left - offsetX;
+      const newTop = e.clientY - containerRect.top - offsetY;
+
+      activeEl.style.left = `${newLeft}px`;
+      activeEl.style.top = `${newTop}px`;
+    };
+
+    const endDrag = () => {
+      activeEl = null;
+      containerRect = null;
+      document.removeEventListener("pointermove", handlePointerMove);
+    };
+
+    const handlePointerDown = (e) => {
+      // Only left click for mouse; allow touch/pen.
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+
+      const el = e.currentTarget;
+      if (!(el instanceof HTMLElement)) return;
+
+      e.preventDefault();
+
+      activeEl = el;
+      containerRect = container.getBoundingClientRect();
+
+      const photoRect = el.getBoundingClientRect();
+      offsetX = e.clientX - photoRect.left;
+      offsetY = e.clientY - photoRect.top;
+
+      document.addEventListener("pointermove", handlePointerMove);
+      document.addEventListener("pointerup", endDrag, { once: true });
+      document.addEventListener("pointercancel", endDrag, { once: true });
+    };
+
+    photos.forEach((photo) => {
+      photo.addEventListener("pointerdown", handlePointerDown);
+    });
+
+    return () => {
+      photos.forEach((photo) => {
+        photo.removeEventListener("pointerdown", handlePointerDown);
+      });
+      document.removeEventListener("pointermove", handlePointerMove);
+    };
+  }, []);
+
   return (
     <div className="home">
       <div
@@ -337,14 +419,14 @@ function Home({ startTyping = true }) {
 
           <section className="portfolio-shell">
             <header className="portfolio-header">
-              <h2 className="portfolio-title">Portfolio</h2>
+              <h2 className="portfolio-title">PORTFOLIO</h2>
             </header>
             <div
               className="portfolio-pills"
               role="tablist"
               aria-label="Filter portfolio projects by category"
             >
-              {PORTFOLIO_CATEGORIES.map((category) => (
+              {visiblePortfolioCategories.map((category) => (
                 <button
                   key={category.id}
                   type="button"
@@ -353,13 +435,36 @@ function Home({ startTyping = true }) {
                       ? " portfolio-pill--active"
                       : ""
                   }`}
-                  onClick={() => setPortfolioCategory(category.id)}
+                  onClick={() => {
+                    setPortfolioCategory(category.id);
+                    setShowAllPortfolioFilters(false);
+                  }}
                   role="tab"
                   aria-selected={portfolioCategory === category.id}
                 >
                   {category.label}
                 </button>
               ))}
+              {hasMorePortfolioFilters && !showAllPortfolioFilters && (
+                <button
+                  type="button"
+                  className="portfolio-pill portfolio-pill--more-filters"
+                  onClick={() => setShowAllPortfolioFilters(true)}
+                  aria-label="Show more portfolio filters"
+                >
+                  More Filters
+                </button>
+              )}
+              {hasMorePortfolioFilters && showAllPortfolioFilters && (
+                <button
+                  type="button"
+                  className="portfolio-pill portfolio-pill--more-filters"
+                  onClick={() => setShowAllPortfolioFilters(false)}
+                  aria-label="Show fewer portfolio filters"
+                >
+                  Show less
+                </button>
+              )}
             </div>
 
             <div className="portfolio-grid">
@@ -426,18 +531,26 @@ function Home({ startTyping = true }) {
               ))}
             </div>
             <div className="about-text">
-              <h2 className="home-section__title">About Me</h2>
+              <h2 className="home-section__title">ABOUT ME</h2>
               <p className="home-section__text">
                 Hi! I&apos;m a Canadian front-end developer and website designer
                 based in Surrey, B.C. I like to make web experiences that
                 communicate authenticity, and feel organic. When I&apos;m not
                 making websites or little projects, you might find me out on a
-                river walk, taking nature photos, or visiting a music bar. If
-                you can&apos;t find me enjoying the above, I&apos;m probably
+                river walk, taking nature photos, or visiting a music bar.
+                <br></br>
+                <br></br>
+                If you can&apos;t find me enjoying the above, I&apos;m probably
                 enjoying a good nap. Otherwise, seriously speaking, I like to
                 play the electric bass, print, paint, make cosplay props, and
                 play the occasional video game (I&apos;m in a bit of a
                 Helldivers II phase at the moment).
+                <br></br>
+                <br></br>
+                <span className="portfolio-context__text about-me-hint">
+                  These are some photos I've taken in the last few years. Try
+                  moving them around!
+                </span>
               </p>
             </div>
           </div>

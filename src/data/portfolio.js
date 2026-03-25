@@ -3,7 +3,15 @@ import PlaceholderImg from "../assets/img/placeholder.jpg";
 import GingerDieline from "../assets/img/Ginger Juice Variant@2x.png";
 import PickleDieline from "../assets/img/Pickle Juice Variant@2x.png";
 import TomatoDieline from "../assets/img/Tomato Juice Variant@2x.png";
+import AdPoster1 from "../assets/img/Ad 1.png";
+import AdPoster2 from "../assets/img/Ad 2.png";
+import AdPoster3 from "../assets/img/Ad 3.png";
+import PosterDetail1 from "../assets/img/poster_detail1.png";
+import PosterDetail2 from "../assets/img/poster_detail2.png";
+import PosterDetail3 from "../assets/img/poster_detail3.png";
 import RockiesVideo from "../assets/videos/Final Project 2295.mov";
+import MontroPromoVideo from "../assets/videos/Montro_Promo_Med.mp4";
+import PosterMockup1 from "../assets/img/poster_mockup1.png";
 
 export const PORTFOLIO_CATEGORIES = [
   { id: "all", label: "All", type: "all" },
@@ -84,7 +92,7 @@ export function getCardCategoryLabels(project) {
 export const PORTFOLIO_PROJECTS = [
   {
     id: "safespace-case-study",
-    title: "SafeSpace App",
+    title: "SAFESPACE APP",
     category: "uiux",
     kind: "case-study",
     tags: ["Full Stack Development", "UI/UX Design", "App Design"],
@@ -93,7 +101,7 @@ export const PORTFOLIO_PROJECTS = [
       role: "Lead Full Stack Developer",
       tools: [],
       overview: {
-        title: "Overview",
+        title: "OVERVIEW",
         text: "...",
       },
       designThinking: {
@@ -102,18 +110,18 @@ export const PORTFOLIO_PROJECTS = [
         carousel: [PlaceholderImg],
       },
       conceptRationale: {
-        title: "Concept & Rationale",
+        title: "CONCEPT & RATIONALE",
         text: "..." + "...",
       },
       finalResult: {
-        title: "Final Result",
+        title: "FINAL RESULT",
         buttonText: "View prototype",
       },
     },
   },
   {
     id: "can-product-design",
-    title: "Can Product Design",
+    title: "CAN PRODUCT DESIGN",
     category: "graphic",
     kind: "project",
     tags: [
@@ -131,7 +139,7 @@ export const PORTFOLIO_PROJECTS = [
         { short: "Ps", label: "Adobe Photoshop" },
       ],
       overview: {
-        title: "Project Overview",
+        title: "PROJECT OVERVIEW",
         text:
           "3 can design variants of soup-can/jar worthy liquids into portable " +
           "355mL drinking cans. The challenge was to pull recognizable design " +
@@ -150,7 +158,7 @@ export const PORTFOLIO_PROJECTS = [
         carousel: [PlaceholderImg, PlaceholderImg, PlaceholderImg],
       },
       conceptRationale: {
-        title: "Concept & Rationale",
+        title: "CONCEPT & RATIONALE",
         text:
           'The resulting concept is the "Bueller\'s multipurpose brew" brand line. ' +
           "This set of beverage cans (which comes in 3 flavors) was created on the " +
@@ -161,14 +169,14 @@ export const PORTFOLIO_PROJECTS = [
           "marketing a niche brand to appeal to the public eye.",
       },
       finalResult: {
-        title: "Final Result",
+        title: "FINAL RESULT",
         dielines: [GingerDieline, PickleDieline, TomatoDieline],
       },
     },
   },
   {
     id: "montro-app-design",
-    title: "Montro App Design",
+    title: "MONTRO APP DESIGN",
     category: "uiux",
     kind: "project",
     tags: ["UI/UX Design", "App Design"],
@@ -177,7 +185,7 @@ export const PORTFOLIO_PROJECTS = [
       role: "UI/UX Designer",
       tools: [{ short: "Fi", label: "Figma" }],
       overview: {
-        title: "Project Overview",
+        title: "PROJECT OVERVIEW",
         text:
           "A mobile budgeting and expense tracking app designed for youth. The client challenge was to find a target demographic," +
           " study app competitors, and provide an app solution to hand off to a full-stack development team with a " +
@@ -194,7 +202,7 @@ export const PORTFOLIO_PROJECTS = [
         carousel: [PlaceholderImg],
       },
       conceptRationale: {
-        title: "Concept & Rationale",
+        title: "CONCEPT & RATIONALE",
         text:
           "The resulting concept is the “Montro”, the gamified expense tracker for young adults. " +
           "This app was made to build habits for young adults entering the adult world of expense" +
@@ -205,14 +213,14 @@ export const PORTFOLIO_PROJECTS = [
           "Montro and the reasoning for key design decisions. Replace with your final content.",
       },
       finalResult: {
-        title: "Final Result",
-        buttonText: "Preview Website",
+        title: "PROMO VIDEO",
+        video: MontroPromoVideo,
       },
     },
   },
   {
     id: "rockies-motion-graphic",
-    title: '"Rockies" Motion Graphic',
+    title: '"ROCKIES" MOTION GRAPHIC',
     category: "motion-graphics",
     kind: "project",
     tags: ["Graphic Design", "Motion Graphics"],
@@ -224,7 +232,7 @@ export const PORTFOLIO_PROJECTS = [
         { short: "Ai", label: "Adobe Illustrator" },
       ],
       overview: {
-        title: "Project Overview",
+        title: "PROJECT OVERVIEW",
         text:
           'A short motion graphic inspired by vintage "Rockies" title cards. ' +
           "This placeholder entry can be updated later with final frames, " +
@@ -240,15 +248,49 @@ export const PORTFOLIO_PROJECTS = [
         carousel: [PlaceholderImg],
       },
       conceptRationale: {
-        title: "Concept & Rationale",
+        title: "CONCEPT & RATIONALE",
         text:
           "Planned as a stylized bumper that combines bold typography, parallax " +
           "landscape layers, and grainy film texture to capture the feeling of " +
           "a late‑night cable movie intro.",
       },
       finalResult: {
-        title: "Final Result",
+        title: "FINAL RESULT",
         video: RockiesVideo,
+      },
+    },
+  },
+  {
+    id: "company-poster-design",
+    title: "COMPANY POSTER DESIGN",
+    category: "graphic",
+    kind: "project",
+    tags: ["Graphic Design", "Branding", "Illustration"],
+    image: PosterMockup1,
+    detail: {
+      heroImage: PosterMockup1,
+      role: "Graphic Designer",
+      tools: [
+        { short: "Ai", label: "Adobe Illustrator" },
+        { short: "Ps", label: "Adobe Photoshop" },
+      ],
+      overview: {
+        title: "PROJECT OVERVIEW",
+        text: "A poster concept created for a locally based blacksmithing company with an emphasis on bold typography, hierarchy, and clean visual storytelling.",
+      },
+      designThinking: {
+        text: "The design approach explored layout balance, contrast, and visual rhythm to ensure key messaging remained readable at distance. The goal was to make something that was clear, a little playful, but at its core a business poster. This was an exercise to try and experiment with implementing logo design aside little details such as the engraving/etchin style details on the poster corners to fill space without detracting from the point.",
+        contextText:
+          "Iterations focused on balancing brand tone with strong call-to-action placement and supporting imagery.",
+        carousel: [PosterDetail1, PosterDetail2, PosterDetail3],
+      },
+      conceptRationale: {
+        title: "CONCEPT & RATIONALE",
+        text: "The final output is a structured but simple poster set that guides the viewer's eye from headline to supporting details, reinforcing both clarity and brand identity of \"Copper Co\"'s services.",
+      },
+      finalResult: {
+        title: "FINAL RESULT",
+        posters: [AdPoster1, AdPoster2, AdPoster3],
       },
     },
   },

@@ -11,6 +11,7 @@ import PortfolioCardCategories from "../components/PortfolioCardCategories";
 
 function Portfolio() {
   const [activeCategory, setActiveCategory] = useState("all");
+  const [showAllPortfolioFilters, setShowAllPortfolioFilters] = useState(false);
 
   const filteredProjects = useMemo(() => {
     const currentFilter = PORTFOLIO_CATEGORIES.find(
@@ -38,6 +39,24 @@ function Portfolio() {
     return PORTFOLIO_PROJECTS;
   }, [activeCategory]);
 
+  const hasMorePortfolioFilters = PORTFOLIO_CATEGORIES.length > 3;
+  const visiblePortfolioCategories = useMemo(() => {
+    if (!hasMorePortfolioFilters || showAllPortfolioFilters) {
+      return PORTFOLIO_CATEGORIES;
+    }
+
+    const firstThree = PORTFOLIO_CATEGORIES.slice(0, 3);
+    const activeIndex = PORTFOLIO_CATEGORIES.findIndex(
+      (category) => category.id === activeCategory,
+    );
+
+    if (activeIndex >= 3) {
+      return [firstThree[0], firstThree[1], PORTFOLIO_CATEGORIES[activeIndex]];
+    }
+
+    return firstThree;
+  }, [activeCategory, hasMorePortfolioFilters, showAllPortfolioFilters]);
+
   return (
     <div className="portfolio-page">
       <section className="portfolio-shell">
@@ -50,20 +69,43 @@ function Portfolio() {
           role="tablist"
           aria-label="Filter portfolio projects by category"
         >
-          {PORTFOLIO_CATEGORIES.map((category) => (
+          {visiblePortfolioCategories.map((category) => (
             <button
               key={category.id}
               type="button"
               className={`portfolio-pill${
                 activeCategory === category.id ? " portfolio-pill--active" : ""
               }`}
-              onClick={() => setActiveCategory(category.id)}
+              onClick={() => {
+                setActiveCategory(category.id);
+                setShowAllPortfolioFilters(false);
+              }}
               role="tab"
               aria-selected={activeCategory === category.id}
             >
               {category.label}
             </button>
           ))}
+          {hasMorePortfolioFilters && !showAllPortfolioFilters && (
+            <button
+              type="button"
+              className="portfolio-pill portfolio-pill--more-filters"
+              onClick={() => setShowAllPortfolioFilters(true)}
+              aria-label="Show more portfolio filters"
+            >
+              More filters
+            </button>
+          )}
+          {hasMorePortfolioFilters && showAllPortfolioFilters && (
+            <button
+              type="button"
+              className="portfolio-pill portfolio-pill--more-filters"
+              onClick={() => setShowAllPortfolioFilters(false)}
+              aria-label="Show fewer portfolio filters"
+            >
+              Show less
+            </button>
+          )}
         </div>
 
         <div className="portfolio-grid">

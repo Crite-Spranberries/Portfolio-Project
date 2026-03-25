@@ -260,6 +260,23 @@
   box-sizing: border-box;
 }
 
+/* Adjust spacing between frames: keep the gap after the hero consistent. */
+.home-section--portfolio {
+  /* Reduce empty space above/below the portfolio content */
+  min-height: 0;
+  align-items: start;
+  /* No extra top padding: hero's bottom padding becomes the section gap */
+  padding: 0 var(--page-padding) calc(var(--page-padding) + 3rem);
+}
+
+.home-section--about {
+  /* Make the content start right after the previous section's gap */
+  min-height: 0;
+  align-items: start;
+  padding-top: 0;
+  padding-bottom: calc(var(--page-padding) + 3rem);
+}
+
 .home-section-divider {
   border: none;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
@@ -325,6 +342,12 @@
   display: flex;
   flex-direction: column;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
+  cursor: grab;
+  touch-action: none;
+}
+
+.about-photo:active {
+  cursor: grabbing;
 }
 
 /* Scatter positions centered in container for balanced proportions vs text column */
@@ -393,6 +416,12 @@
   color: #d0d0d0;
   line-height: 1.6;
   margin: 0;
+}
+
+.about-me-hint {
+  /* Reuse the Design Thinking text sizing/color via `portfolio-context__text`,
+     but don't force italics on the Home page hint. */
+  font-style: normal !important;
 }
 
 .home-here-link {
