@@ -65,6 +65,34 @@ export const PORTFOLIO_CATEGORIES = [
   },
 ];
 
+/**
+ * Whether a project matches a single category pill (category id or tag-based filter).
+ */
+export function projectMatchesCategoryFilter(categoryDef, project) {
+  if (!categoryDef || categoryDef.type === "all") return true;
+  if (categoryDef.type === "category") return project.category === categoryDef.id;
+  if (categoryDef.type === "tag" && categoryDef.tag) {
+    return Array.isArray(project.tags) && project.tags.includes(categoryDef.tag);
+  }
+  return false;
+}
+
+/**
+ * Multi-select filter: empty selection shows all projects; otherwise projects that
+ * match **every** selected filter (AND). Toggle "All" clears selection.
+ */
+export function filterPortfolioProjectsBySelectedIds(projects, selectedCategoryIds) {
+  if (!selectedCategoryIds?.length) return projects;
+  const defs = selectedCategoryIds
+    .map((id) => PORTFOLIO_CATEGORIES.find((c) => c.id === id))
+    .filter(Boolean)
+    .filter((c) => c.type !== "all");
+  if (!defs.length) return projects;
+  return projects.filter((project) =>
+    defs.every((def) => projectMatchesCategoryFilter(def, project)),
+  );
+}
+
 /** Order for displaying category pills on cards (first in list appears first). */
 export const PILL_DISPLAY_ORDER = [
   "App Design",

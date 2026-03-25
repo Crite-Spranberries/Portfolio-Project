@@ -112,6 +112,18 @@
   margin-top: 0.5rem;
 }
 
+.portfolio-empty-filters {
+  grid-column: 1 / -1;
+  text-align: center;
+  margin: 2rem auto;
+  padding: 1.5rem 1rem;
+  max-width: 28rem;
+  justify-self: center;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+
 .portfolio-card {
   background: linear-gradient(
     145deg,
@@ -1212,8 +1224,9 @@
     margin-left: 1rem;
   }
 
+  /* Single title: space-between pins one child to the start; keep centered like desktop. */
   .portfolio-header {
-    justify-content: space-between;
+    justify-content: center;
   }
 
   .portfolio-detail-section--split {
@@ -1234,11 +1247,16 @@
     padding-right: 0;
   }
 
-  /* Bleed sections use the same full grid span as main column (was 3 / 11). */
+  /* Bleed sections use the same full grid span as main column (was 3 / 11).
+     Full-bleed rows cancel .portfolio-detail horizontal padding, so restore the
+     same inset for copy and images (Design Thinking, Research & Insight, etc.). */
   .portfolio-detail-bleed__inner,
   .portfolio-detail--case-study .portfolio-detail-bleed__inner,
   .portfolio-detail--standard .portfolio-detail-bleed__inner {
     grid-column: 1 / -1;
+    padding-left: var(--detail-pad-x-start);
+    padding-right: var(--detail-pad-x-end);
+    box-sizing: border-box;
   }
 
   /* Desktop limits image column to ~38%; on narrow screens use full width. */

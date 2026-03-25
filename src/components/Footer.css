@@ -68,7 +68,7 @@
 .footer-bottom {
   grid-column: 2 / 12;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   padding-top: 1.75rem;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -104,11 +104,6 @@
   margin: 0;
 }
 
-.footer-links a {
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
 @media (max-width: 768px) {
   .footer {
     margin-top: 4rem;
@@ -131,8 +126,6 @@
 
   .footer-bottom {
     grid-column: 1 / -1;
-    flex-direction: column;
-    gap: 0.5rem;
     text-align: center;
   }
 }

@@ -310,34 +310,30 @@
   margin-top: 1rem;
 }
 
-@media (max-width: 900px) {
-  .about-layout {
-    grid-template-columns: 1fr;
-  }
-}
+/* Two-column about only on wide screens; iPad/tablet uses stacked layout (see max-width: 1200px). */
 
-/* Scatter container for photography – centered in column, with tighter side gaps */
+/* Scatter container: padding keeps drop-shadows inside bounds; min-height scales with width
+   so bottom row (high top %) doesn’t clip. Photo width is %‑capped so left% + width ≤ 100%. */
 .about-photos {
   position: relative;
-  min-height: 420px;
+  min-height: clamp(300px, 88vw, 420px);
   width: 100%;
   max-width: 420px;
   --about-photo-shift-y: 34px;
+  /* Shared with nth-child max-left so calc() matches .about-photo width */
+  --about-photo-w: clamp(56px, 33%, 140px);
   margin: 0 auto;
-}
-
-@media (max-width: 900px) {
-  .about-photos {
-    min-height: 320px;
-    max-width: 320px;
-    --about-photo-shift-y: 22px;
-  }
+  /* Vertical inset only: horizontal padding would offset % positions vs drag (px) coords */
+  padding: 14px 0 20px;
+  box-sizing: border-box;
+  overflow: visible;
 }
 
 /* Single photo: frame + caption, scattered position/rotation (centered cluster) */
 .about-photo {
   position: absolute;
-  width: 140px;
+  width: var(--about-photo-w);
+  max-width: 100%;
   margin: 0;
   display: flex;
   flex-direction: column;
@@ -350,15 +346,50 @@
   cursor: grabbing;
 }
 
-/* Scatter positions centered in container for balanced proportions vs text column */
-.about-photo:nth-child(1) { left: 8%; top: 2%; transform: translateY(var(--about-photo-shift-y)) rotate(-6deg); }
-.about-photo:nth-child(2) { left: 48%; top: 4%; transform: translateY(var(--about-photo-shift-y)) rotate(4deg); }
-.about-photo:nth-child(3) { left: 20%; top: 22%; transform: translateY(var(--about-photo-shift-y)) rotate(-3deg); }
-.about-photo:nth-child(4) { left: 62%; top: 0; transform: translateY(var(--about-photo-shift-y)) rotate(5deg); }
-.about-photo:nth-child(5) { left: 52%; top: 26%; transform: translateY(var(--about-photo-shift-y)) rotate(-4deg); }
-.about-photo:nth-child(6) { left: 4%; top: 42%; transform: translateY(var(--about-photo-shift-y)) rotate(2deg); }
-.about-photo:nth-child(7) { left: 58%; top: 38%; transform: translateY(var(--about-photo-shift-y)) rotate(-5deg); }
-.about-photo:nth-child(8) { left: 32%; top: 52%; transform: translateY(var(--about-photo-shift-y)) rotate(3deg); }
+/*
+ * Positions as % of .about-photos padding box. Width is ≤33% so left + width stays < 100%;
+ * right-heavy items use min() so they never overflow on very small containers.
+ */
+.about-photo:nth-child(1) {
+  left: 8%;
+  top: 3%;
+  transform: translateY(var(--about-photo-shift-y)) rotate(-6deg);
+}
+.about-photo:nth-child(2) {
+  left: 46%;
+  top: 5%;
+  transform: translateY(var(--about-photo-shift-y)) rotate(4deg);
+}
+.about-photo:nth-child(3) {
+  left: 18%;
+  top: 22%;
+  transform: translateY(var(--about-photo-shift-y)) rotate(-3deg);
+}
+.about-photo:nth-child(4) {
+  left: min(58%, calc(100% - var(--about-photo-w) - 4px));
+  top: 2%;
+  transform: translateY(var(--about-photo-shift-y)) rotate(5deg);
+}
+.about-photo:nth-child(5) {
+  left: 48%;
+  top: 26%;
+  transform: translateY(var(--about-photo-shift-y)) rotate(-4deg);
+}
+.about-photo:nth-child(6) {
+  left: 4%;
+  top: 40%;
+  transform: translateY(var(--about-photo-shift-y)) rotate(2deg);
+}
+.about-photo:nth-child(7) {
+  left: min(54%, calc(100% - var(--about-photo-w) - 4px));
+  top: 36%;
+  transform: translateY(var(--about-photo-shift-y)) rotate(-5deg);
+}
+.about-photo:nth-child(8) {
+  left: 30%;
+  top: 52%;
+  transform: translateY(var(--about-photo-shift-y)) rotate(3deg);
+}
 
 .about-photo__frame {
   background: #fff;
@@ -499,17 +530,112 @@
   }
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Tablet + small laptop: hero was left-only in 5 cols with empty right (no profile image);
+   stack + center About so title/body aren’t squeezed beside the photo cluster.
+   1200px covers iPad landscape widths (~1024–1180) while matching .hero max-width. */
+@media (max-width: 1200px) {
   .hero {
     grid-template-columns: repeat(12, 1fr);
+    gap: clamp(8px, 1.5vw, 14px);
+    padding: calc(88px + var(--page-padding)) max(1.25rem, var(--page-padding))
+      max(2rem, var(--page-padding) + 1.5rem);
+  }
+
+  .hero-content {
+    grid-column: 1 / -1;
+    padding: clamp(1rem, 3vw, 1.5rem) 0;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: min(560px, 100%);
+    text-align: center;
+  }
+
+  .hero-heading {
+    font-size: clamp(2.35rem, 4.8vw, 3.15rem);
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+  }
+
+  .hero-content p {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+  }
+
+  .hero-cta {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 1.5rem;
+  }
+
+  .hero-cta .social-links {
+    justify-content: center;
+  }
+
+  .hero-image {
+    grid-column: 1 / -1;
+    padding: 1rem;
+  }
+
+  .home-section__content {
+    grid-column: 1 / -1;
+  }
+
+  /* Tablet: slightly tighter card width + taller min-height so the stack doesn’t clip */
+  .about-photos {
+    min-height: clamp(300px, 78vw, 380px);
+    max-width: min(400px, 100%);
+    --about-photo-w: clamp(54px, 32%, 138px);
+    --about-photo-shift-y: 26px;
+    padding: 12px 11px 20px;
+  }
+
+  .about-layout {
+    grid-template-columns: 1fr;
+    gap: clamp(1.75rem, 4vw, 2.5rem);
+    max-width: 42rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+
+  .about-text .home-section__title {
+    text-align: center;
+  }
+
+  .about-text .home-section__text {
+    max-width: 36em;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .home-section--about {
+    padding-left: max(1.25rem, var(--page-padding));
+    padding-right: max(1.25rem, var(--page-padding));
+    padding-bottom: calc(var(--page-padding) + 2.75rem);
+  }
+
+  .home-section__content--about {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: min(42rem, 100%);
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Responsive Design — phones: tighter rhythm (inherits tablet hero centering from 1200px) */
+@media (max-width: 768px) {
+  .hero {
     gap: 8px;
     padding: calc(88px + var(--page-padding)) var(--page-padding) 2rem;
   }
 
   .hero-content {
-    grid-column: 1 / -1;
     padding: 1rem 0;
+    max-width: 100%;
   }
 
   .home-section {
@@ -528,18 +654,195 @@
     font-size: 1rem;
   }
 
-  .hero-cta {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .hero-image {
-    grid-column: 1 / -1;
-    padding: 1rem;
+  .about-photos {
+    min-height: clamp(288px, 92vw, 340px);
+    max-width: min(320px, 100%);
+    --about-photo-w: clamp(50px, 31%, 120px);
+    --about-photo-shift-y: 20px;
+    padding: 12px 0 18px;
   }
 
   .image-placeholder {
     width: 200px;
     height: 200px;
+  }
+}
+
+/* About photos: double-click / double-tap enlarged view */
+.about-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+    max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  box-sizing: border-box;
+  background: rgba(8, 8, 8, 0.92);
+  backdrop-filter: blur(6px);
+  cursor: zoom-out;
+}
+
+.about-lightbox__panel {
+  position: relative;
+  max-width: min(920px, 100%);
+  max-height: min(88vh, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  cursor: default;
+}
+
+.about-lightbox__close {
+  position: absolute;
+  top: -0.25rem;
+  right: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.about-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+}
+
+.about-lightbox__close:focus-visible {
+  outline: 2px solid #e6c547;
+  outline-offset: 2px;
+}
+
+.about-lightbox__img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(72vh, 85vw);
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+}
+
+.about-lightbox__caption {
+  margin: 0;
+  max-width: 42rem;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: rgba(220, 220, 220, 0.95);
+}
+
+/* Scroll-triggered fade-in: portfolio + about (hero stays as-is) */
+.home-section--portfolio.home-reveal:not(.home-reveal--visible) .home-section-divider,
+.home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-shell > .portfolio-header,
+.home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-shell > .portfolio-pills {
+  opacity: 0;
+  transform: translate3d(0, 16px, 0);
+}
+
+.home-section--portfolio.home-reveal--visible .home-section-divider {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 0s;
+}
+
+.home-section--portfolio.home-reveal--visible .portfolio-header {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 0.1s;
+}
+
+.home-section--portfolio.home-reveal--visible .portfolio-pills {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 0.22s;
+}
+
+.home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-card-link,
+.home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-empty-filters {
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+}
+
+.home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-card-link {
+  pointer-events: none;
+}
+
+/* `both` = during delay, first keyframe holds (avoids flash before stagger); works on filter remount too */
+.home-section--portfolio.home-reveal--visible .portfolio-card-link {
+  animation: homePortfolioCardIn 0.82s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(0.38s + var(--card-stagger, 0) * 0.12s);
+}
+
+.home-section--portfolio.home-reveal--visible .portfolio-empty-filters {
+  animation: homePortfolioCardIn 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: 0.32s;
+}
+
+@keyframes homePortfolioCardIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.home-section--about.home-reveal:not(.home-reveal--visible) .home-section__content--about {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+.home-section--about.home-reveal--visible .home-section__content--about {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.65s ease,
+    transform 0.65s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-section--portfolio.home-reveal:not(.home-reveal--visible) .home-section-divider,
+  .home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-shell > .portfolio-header,
+  .home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-shell > .portfolio-pills,
+  .home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-card-link,
+  .home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-empty-filters,
+  .home-section--about.home-reveal:not(.home-reveal--visible) .home-section__content--about {
+    opacity: 1;
+    transform: none;
+  }
+
+  .home-section--portfolio.home-reveal--visible .portfolio-card-link,
+  .home-section--portfolio.home-reveal--visible .portfolio-empty-filters {
+    animation: none;
+  }
+
+  .home-section--portfolio.home-reveal:not(.home-reveal--visible) .portfolio-card-link {
+    pointer-events: auto;
   }
 }

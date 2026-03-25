@@ -5,39 +5,25 @@ import PlaceholderImage from "../assets/img/monkey.png";
 import {
   PORTFOLIO_CATEGORIES,
   PORTFOLIO_PROJECTS,
+  filterPortfolioProjectsBySelectedIds,
   getCardCategoryLabels,
 } from "../data/portfolio";
 import PortfolioCardCategories from "../components/PortfolioCardCategories";
 
 function Portfolio() {
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [selectedPortfolioFilterIds, setSelectedPortfolioFilterIds] = useState(
+    [],
+  );
   const [showAllPortfolioFilters, setShowAllPortfolioFilters] = useState(false);
 
-  const filteredProjects = useMemo(() => {
-    const currentFilter = PORTFOLIO_CATEGORIES.find(
-      (category) => category.id === activeCategory,
-    );
-
-    if (!currentFilter || currentFilter.type === "all") {
-      return PORTFOLIO_PROJECTS;
-    }
-
-    if (currentFilter.type === "category") {
-      return PORTFOLIO_PROJECTS.filter(
-        (project) => project.category === currentFilter.id,
-      );
-    }
-
-    if (currentFilter.type === "tag" && currentFilter.tag) {
-      return PORTFOLIO_PROJECTS.filter(
-        (project) =>
-          Array.isArray(project.tags) &&
-          project.tags.includes(currentFilter.tag),
-      );
-    }
-
-    return PORTFOLIO_PROJECTS;
-  }, [activeCategory]);
+  const filteredProjects = useMemo(
+    () =>
+      filterPortfolioProjectsBySelectedIds(
+        PORTFOLIO_PROJECTS,
+        selectedPortfolioFilterIds,
+      ),
+    [selectedPortfolioFilterIds],
+  );
 
   const hasMorePortfolioFilters = PORTFOLIO_CATEGORIES.length > 3;
   const visiblePortfolioCategories = useMemo(() => {
@@ -46,16 +32,21 @@ function Portfolio() {
     }
 
     const firstThree = PORTFOLIO_CATEGORIES.slice(0, 3);
-    const activeIndex = PORTFOLIO_CATEGORIES.findIndex(
-      (category) => category.id === activeCategory,
-    );
+    const outsideIndices = selectedPortfolioFilterIds
+      .map((id) => PORTFOLIO_CATEGORIES.findIndex((c) => c.id === id))
+      .filter((i) => i >= 3);
 
-    if (activeIndex >= 3) {
-      return [firstThree[0], firstThree[1], PORTFOLIO_CATEGORIES[activeIndex]];
+    if (outsideIndices.length > 0) {
+      const firstOutside = Math.min(...outsideIndices);
+      return [firstThree[0], firstThree[1], PORTFOLIO_CATEGORIES[firstOutside]];
     }
 
     return firstThree;
-  }, [activeCategory, hasMorePortfolioFilters, showAllPortfolioFilters]);
+  }, [
+    hasMorePortfolioFilters,
+    selectedPortfolioFilterIds,
+    showAllPortfolioFilters,
+  ]);
 
   return (
     <div className="portfolio-page">
@@ -66,26 +57,39 @@ function Portfolio() {
 
         <div
           className="portfolio-pills"
-          role="tablist"
-          aria-label="Filter portfolio projects by category"
+          role="group"
+          aria-label="Filter portfolio projects by category (multiple selection)"
         >
-          {visiblePortfolioCategories.map((category) => (
-            <button
-              key={category.id}
-              type="button"
-              className={`portfolio-pill${
-                activeCategory === category.id ? " portfolio-pill--active" : ""
-              }`}
-              onClick={() => {
-                setActiveCategory(category.id);
-                setShowAllPortfolioFilters(false);
-              }}
-              role="tab"
-              aria-selected={activeCategory === category.id}
-            >
-              {category.label}
-            </button>
-          ))}
+          {visiblePortfolioCategories.map((category) => {
+            const isAll = category.id === "all";
+            const isActive = isAll
+              ? selectedPortfolioFilterIds.length === 0
+              : selectedPortfolioFilterIds.includes(category.id);
+            return (
+              <button
+                key={category.id}
+                type="button"
+                className={`portfolio-pill${
+                  isActive ? " portfolio-pill--active" : ""
+                }`}
+                onClick={() => {
+                  if (isAll) {
+                    setSelectedPortfolioFilterIds([]);
+                  } else {
+                    setSelectedPortfolioFilterIds((prev) =>
+                      prev.includes(category.id)
+                        ? prev.filter((id) => id !== category.id)
+                        : [...prev, category.id],
+                    );
+                  }
+                  setShowAllPortfolioFilters(false);
+                }}
+                aria-pressed={isActive}
+              >
+                {category.label}
+              </button>
+            );
+          })}
           {hasMorePortfolioFilters && !showAllPortfolioFilters && (
             <button
               type="button"
@@ -109,36 +113,43 @@ function Portfolio() {
         </div>
 
         <div className="portfolio-grid">
-          {filteredProjects.map((project) => {
-            const kindLabel =
-              project.kind === "case-study" ? "Case study" : "Project";
+          {filteredProjects.length === 0 &&
+          selectedPortfolioFilterIds.length > 0 ? (
+            <p className="portfolio-empty-filters" role="status">
+              Unable to find a project with these filters!
+            </p>
+          ) : (
+            filteredProjects.map((project) => {
+              const kindLabel =
+                project.kind === "case-study" ? "Case study" : "Project";
 
-            return (
-              <Link
-                key={project.id}
-                to={`/portfolio/${project.id}`}
-                className="portfolio-card-link"
-              >
-                <article className="portfolio-card">
-                  <div className="portfolio-card-image-wrapper">
-                    <img
-                      src={PlaceholderImage}
-                      alt=""
-                      className="portfolio-card-image"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="portfolio-card-body">
-                    <h2 className="portfolio-card-title">{project.title}</h2>
-                    <p className="portfolio-card-kind">{kindLabel}</p>
-                    <PortfolioCardCategories
-                      labels={getCardCategoryLabels(project)}
-                    />
-                  </div>
-                </article>
-              </Link>
-            );
-          })}
+              return (
+                <Link
+                  key={project.id}
+                  to={`/portfolio/${project.id}`}
+                  className="portfolio-card-link"
+                >
+                  <article className="portfolio-card">
+                    <div className="portfolio-card-image-wrapper">
+                      <img
+                        src={PlaceholderImage}
+                        alt=""
+                        className="portfolio-card-image"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="portfolio-card-body">
+                      <h2 className="portfolio-card-title">{project.title}</h2>
+                      <p className="portfolio-card-kind">{kindLabel}</p>
+                      <PortfolioCardCategories
+                        labels={getCardCategoryLabels(project)}
+                      />
+                    </div>
+                  </article>
+                </Link>
+              );
+            })
+          )}
         </div>
       </section>
     </div>

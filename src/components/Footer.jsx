@@ -80,11 +80,6 @@ function Footer() {
             </div>
             <p className="footer-copy">© Samuel B. Chua 2026</p>
           </div>
-          <p className="footer-links">
-            <a href="#terms">Terms &amp; Conditions</a>
-            <span> | </span>
-            <a href="#privacy">Privacy Policy</a>
-          </p>
         </div>
       </div>
     </footer>

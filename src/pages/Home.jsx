@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import ScrollDownIcon from "../assets/vectors/scrolldown-icon.svg";
 import MailIcon from "../assets/vectors/mail-icon.svg";
@@ -15,6 +15,7 @@ import ResumePDF from "../assets/personalfiles/Samuel_Chua_Assignment02-Resume.p
 import {
   PORTFOLIO_CATEGORIES,
   PORTFOLIO_PROJECTS,
+  filterPortfolioProjectsBySelectedIds,
   getCardCategoryLabels,
 } from "../data/portfolio";
 import PortfolioCardCategories from "../components/PortfolioCardCategories";
@@ -44,34 +45,23 @@ function Home({ startTyping = true }) {
   const [showContentAfterTyping, setShowContentAfterTyping] = useState(false);
   const [showScrollIndicator, setShowScrollIndicator] = useState(false);
   const [scrollDarken, setScrollDarken] = useState(0);
-  const [portfolioCategory, setPortfolioCategory] = useState("all");
+  const [selectedPortfolioFilterIds, setSelectedPortfolioFilterIds] = useState(
+    [],
+  );
   const [showAllPortfolioFilters, setShowAllPortfolioFilters] = useState(false);
+  const [aboutLightbox, setAboutLightbox] = useState(null);
+  const aboutPhotoLastTapRef = useRef({ time: 0, index: -1 });
+  const portfolioSectionRef = useRef(null);
+  const aboutSectionRef = useRef(null);
 
-  const visiblePortfolioProjects = useMemo(() => {
-    const currentFilter = PORTFOLIO_CATEGORIES.find(
-      (category) => category.id === portfolioCategory,
-    );
-
-    if (!currentFilter || currentFilter.type === "all") {
-      return PORTFOLIO_PROJECTS;
-    }
-
-    if (currentFilter.type === "category") {
-      return PORTFOLIO_PROJECTS.filter(
-        (project) => project.category === currentFilter.id,
-      );
-    }
-
-    if (currentFilter.type === "tag" && currentFilter.tag) {
-      return PORTFOLIO_PROJECTS.filter(
-        (project) =>
-          Array.isArray(project.tags) &&
-          project.tags.includes(currentFilter.tag),
-      );
-    }
-
-    return PORTFOLIO_PROJECTS;
-  }, [portfolioCategory]);
+  const visiblePortfolioProjects = useMemo(
+    () =>
+      filterPortfolioProjectsBySelectedIds(
+        PORTFOLIO_PROJECTS,
+        selectedPortfolioFilterIds,
+      ),
+    [selectedPortfolioFilterIds],
+  );
 
   const hasMorePortfolioFilters = PORTFOLIO_CATEGORIES.length > 3;
   const visiblePortfolioCategories = useMemo(() => {
@@ -80,18 +70,21 @@ function Home({ startTyping = true }) {
     }
 
     const firstThree = PORTFOLIO_CATEGORIES.slice(0, 3);
-    const activeIndex = PORTFOLIO_CATEGORIES.findIndex(
-      (category) => category.id === portfolioCategory,
-    );
+    const outsideIndices = selectedPortfolioFilterIds
+      .map((id) => PORTFOLIO_CATEGORIES.findIndex((c) => c.id === id))
+      .filter((i) => i >= 3);
 
-    // If the active category isn't within the first 3, swap the 3rd pill
-    // with the active one so the selection stays visible.
-    if (activeIndex >= 3) {
-      return [firstThree[0], firstThree[1], PORTFOLIO_CATEGORIES[activeIndex]];
+    if (outsideIndices.length > 0) {
+      const firstOutside = Math.min(...outsideIndices);
+      return [firstThree[0], firstThree[1], PORTFOLIO_CATEGORIES[firstOutside]];
     }
 
     return firstThree;
-  }, [hasMorePortfolioFilters, portfolioCategory, showAllPortfolioFilters]);
+  }, [
+    hasMorePortfolioFilters,
+    selectedPortfolioFilterIds,
+    showAllPortfolioFilters,
+  ]);
 
   useEffect(() => {
     if (!location.hash || location.hash === "#") {
@@ -230,6 +223,51 @@ function Home({ startTyping = true }) {
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    if (!aboutLightbox) return undefined;
+    const onKey = (e) => {
+      if (e.key === "Escape") setAboutLightbox(null);
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [aboutLightbox]);
+
+  useEffect(() => {
+    const sections = [portfolioSectionRef.current, aboutSectionRef.current].filter(
+      Boolean,
+    );
+    if (sections.length === 0) return undefined;
+
+    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mq.matches) {
+      sections.forEach((el) => el.classList.add("home-reveal--visible"));
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("home-reveal--visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.14, rootMargin: "0px 0px -4% 0px" },
+    );
+
+    sections.forEach((el) => observer.observe(el));
+
+    return () => {
+      sections.forEach((el) => observer.unobserve(el));
+    };
   }, []);
 
   useEffect(() => {
@@ -413,7 +451,11 @@ function Home({ startTyping = true }) {
 
       {/* Services section intentionally hidden for now. */}
 
-      <section id="portfolio" className="home-section home-section--portfolio">
+      <section
+        id="portfolio"
+        ref={portfolioSectionRef}
+        className="home-section home-section--portfolio home-reveal"
+      >
         <div className="home-section__content home-section__content--portfolio">
           <hr className="home-section-divider" aria-hidden />
 
@@ -423,28 +465,39 @@ function Home({ startTyping = true }) {
             </header>
             <div
               className="portfolio-pills"
-              role="tablist"
-              aria-label="Filter portfolio projects by category"
+              role="group"
+              aria-label="Filter portfolio projects by category (multiple selection)"
             >
-              {visiblePortfolioCategories.map((category) => (
-                <button
-                  key={category.id}
-                  type="button"
-                  className={`portfolio-pill${
-                    portfolioCategory === category.id
-                      ? " portfolio-pill--active"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    setPortfolioCategory(category.id);
-                    setShowAllPortfolioFilters(false);
-                  }}
-                  role="tab"
-                  aria-selected={portfolioCategory === category.id}
-                >
-                  {category.label}
-                </button>
-              ))}
+              {visiblePortfolioCategories.map((category) => {
+                const isAll = category.id === "all";
+                const isActive = isAll
+                  ? selectedPortfolioFilterIds.length === 0
+                  : selectedPortfolioFilterIds.includes(category.id);
+                return (
+                  <button
+                    key={category.id}
+                    type="button"
+                    className={`portfolio-pill${
+                      isActive ? " portfolio-pill--active" : ""
+                    }`}
+                    onClick={() => {
+                      if (isAll) {
+                        setSelectedPortfolioFilterIds([]);
+                      } else {
+                        setSelectedPortfolioFilterIds((prev) =>
+                          prev.includes(category.id)
+                            ? prev.filter((id) => id !== category.id)
+                            : [...prev, category.id],
+                        );
+                      }
+                      setShowAllPortfolioFilters(false);
+                    }}
+                    aria-pressed={isActive}
+                  >
+                    {category.label}
+                  </button>
+                );
+              })}
               {hasMorePortfolioFilters && !showAllPortfolioFilters && (
                 <button
                   type="button"
@@ -467,45 +520,60 @@ function Home({ startTyping = true }) {
               )}
             </div>
 
-            <div className="portfolio-grid">
-              {visiblePortfolioProjects.map((project) => {
-                const kindLabel =
-                  project.kind === "case-study" ? "Case study" : "Project";
+            <div
+              className="portfolio-grid"
+              key={visiblePortfolioProjects.map((p) => p.id).join("|")}
+            >
+              {visiblePortfolioProjects.length === 0 &&
+              selectedPortfolioFilterIds.length > 0 ? (
+                <p className="portfolio-empty-filters" role="status">
+                  Unable to find a project with these filters!
+                </p>
+              ) : (
+                visiblePortfolioProjects.map((project, cardIndex) => {
+                  const kindLabel =
+                    project.kind === "case-study" ? "Case study" : "Project";
 
-                return (
-                  <Link
-                    key={project.id}
-                    to={`/portfolio/${project.id}`}
-                    className="portfolio-card-link"
-                  >
-                    <article className="portfolio-card">
-                      <div className="portfolio-card-image-wrapper">
-                        <img
-                          src={project.image || MonkeyImg}
-                          alt=""
-                          className="portfolio-card-image"
-                          loading="lazy"
-                        />
-                      </div>
-                      <div className="portfolio-card-body">
-                        <h3 className="portfolio-card-title">
-                          {project.title}
-                        </h3>
-                        <p className="portfolio-card-kind">{kindLabel}</p>
-                        <PortfolioCardCategories
-                          labels={getCardCategoryLabels(project)}
-                        />
-                      </div>
-                    </article>
-                  </Link>
-                );
-              })}
+                  return (
+                    <Link
+                      key={project.id}
+                      to={`/portfolio/${project.id}`}
+                      className="portfolio-card-link"
+                      style={{ "--card-stagger": cardIndex }}
+                    >
+                      <article className="portfolio-card">
+                        <div className="portfolio-card-image-wrapper">
+                          <img
+                            src={project.image || MonkeyImg}
+                            alt=""
+                            className="portfolio-card-image"
+                            loading="lazy"
+                          />
+                        </div>
+                        <div className="portfolio-card-body">
+                          <h3 className="portfolio-card-title">
+                            {project.title}
+                          </h3>
+                          <p className="portfolio-card-kind">{kindLabel}</p>
+                          <PortfolioCardCategories
+                            labels={getCardCategoryLabels(project)}
+                          />
+                        </div>
+                      </article>
+                    </Link>
+                  );
+                })
+              )}
             </div>
           </section>
         </div>
       </section>
 
-      <section id="about" className="home-section home-section--about">
+      <section
+        id="about"
+        ref={aboutSectionRef}
+        className="home-section home-section--about home-reveal"
+      >
         <div className="home-section__content home-section__content--about">
           <hr className="home-section-divider" aria-hidden />
           <div className="about-layout">
@@ -515,6 +583,29 @@ function Home({ startTyping = true }) {
                   key={i}
                   className="about-photo"
                   style={{ "--photo-index": i }}
+                  onDoubleClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setAboutLightbox({
+                      src: photo.src,
+                      caption: photo.caption,
+                    });
+                  }}
+                  onTouchEnd={(e) => {
+                    if (e.changedTouches.length !== 1) return;
+                    const now = Date.now();
+                    const { time, index } = aboutPhotoLastTapRef.current;
+                    if (index === i && now - time < 420) {
+                      e.preventDefault();
+                      setAboutLightbox({
+                        src: photo.src,
+                        caption: photo.caption,
+                      });
+                      aboutPhotoLastTapRef.current = { time: 0, index: -1 };
+                    } else {
+                      aboutPhotoLastTapRef.current = { time: now, index: i };
+                    }
+                  }}
                 >
                   <div className="about-photo__frame">
                     <img
@@ -548,14 +639,48 @@ function Home({ startTyping = true }) {
                 <br></br>
                 <br></br>
                 <span className="portfolio-context__text about-me-hint">
-                  These are some photos I've taken in the last few years. Try
-                  moving them around!
+                  The photos you see are some select shots I&apos;ve taken in the
+                  last few years from Chilliwack to Vancouver to Victoria. Try
+                  moving them around, or double-click (double-tap on touch) a
+                  photo to view it larger.
                 </span>
               </p>
             </div>
           </div>
         </div>
       </section>
+
+      {aboutLightbox && (
+        <div
+          className="about-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="about-lightbox-caption"
+          onClick={() => setAboutLightbox(null)}
+        >
+          <div
+            className="about-lightbox__panel"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="about-lightbox__close"
+              aria-label="Close enlarged photo"
+              onClick={() => setAboutLightbox(null)}
+            >
+              ×
+            </button>
+            <img
+              src={aboutLightbox.src}
+              alt=""
+              className="about-lightbox__img"
+            />
+            <p id="about-lightbox-caption" className="about-lightbox__caption">
+              {aboutLightbox.caption}
+            </p>
+          </div>
+        </div>
+      )}
 
       <div
         className={`scroll-indicator ${
