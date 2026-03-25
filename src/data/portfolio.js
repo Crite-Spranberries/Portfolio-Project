@@ -15,7 +15,7 @@ import MotionGraphicDetail2 from "../assets/img/motiongraphic_detail2.png";
 import MotionGraphicDetail3 from "../assets/img/motiongraphic_detail3.png";
 import MotionGraphicDetail4 from "../assets/img/motiongraphic_detail4.png";
 import MotionGraphicDetail5 from "../assets/img/motiongraphic_detail5.png";
-import RockiesVideo from "../assets/videos/Final Project 2295.mov";
+import RockiesVideo from "../assets/videos/Final Project 2295.mp4";
 import MontroPromoVideo from "../assets/videos/Montro_Promo_Med.mp4";
 import MontroMockupTitle from "../assets/img/montro_mockup_title.png";
 import MontroWebsiteCover from "../assets/img/montro_website_cover.png";
