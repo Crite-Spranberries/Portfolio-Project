@@ -1,13 +1,16 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { applySeo } from "../seo/applySeo";
 import "./NotFound.css";
 
 function NotFound() {
   useEffect(() => {
-    document.title = "404 - Not Found | Samuel Chua";
-    return () => {
-      document.title = "Samuel Chua";
-    };
+    applySeo({
+      title: "404 — Page not found",
+      description:
+        "This page is not part of Samuel Chua’s portfolio. Return home or browse projects.",
+      noIndex: true,
+    });
   }, []);
 
   return (

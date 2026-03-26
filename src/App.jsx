@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import SeoHead from "./components/SeoHead";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
 import "./App.css";
@@ -116,6 +117,7 @@ function App() {
 
   return (
     <Router>
+      <SeoHead />
       <ScrollRestoration />
       <ScrollToTop />
       {showSplash && <div className="splash" aria-hidden="true" />}

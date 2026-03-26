@@ -7,6 +7,8 @@ import {
   PORTFOLIO_PROJECTS,
   getCardCategoryLabels,
 } from "../data/portfolio";
+import { applySeo } from "../seo/applySeo";
+import { DEFAULT_DESCRIPTION, getSiteOrigin } from "../seo/siteConfig";
 
 function formatWebsiteDestination(href) {
   try {
@@ -846,29 +848,16 @@ function PortfolioDetail() {
     [projectId],
   );
 
-  if (!project) {
-    return (
-      <div className="portfolio-detail">
-        <div className="portfolio-detail__inner">
-          <h1 className="portfolio-detail__title">Project not found</h1>
-          <p className="portfolio-detail__text">
-            The project you are looking for does not exist or has moved.
-          </p>
-          <Link to="/#portfolio" className="portfolio-detail__back-link">
-            Back to portfolio
-          </Link>
-        </div>
-      </div>
-    );
-  }
+  const body = useMemo(() => {
+    if (!project) return null;
+    return project.kind === "case-study"
+      ? renderCaseStudyBody(project)
+      : renderProjectBody(project);
+  }, [project]);
 
-  const isCaseStudy = project.kind === "case-study";
-  const body = isCaseStudy
-    ? renderCaseStudyBody(project)
-    : renderProjectBody(project);
   const hasSplit =
     body && typeof body === "object" && "bleed" in body && "beforeBleed" in body;
-  const hasBleed = !!project.detail;
+  const hasBleed = !!project?.detail;
 
   useEffect(() => {
     if (!hasBleed) return;
@@ -877,7 +866,7 @@ function PortfolioDetail() {
   }, [hasBleed]);
 
   const caseStudyProgressSections = useMemo(() => {
-    if (!project.detail) return null;
+    if (!project?.detail) return null;
     if (project.kind !== "case-study" && project.id !== MONTRO_FULL_BLEED_PROJECT_ID) {
       return null;
     }
@@ -915,16 +904,70 @@ function PortfolioDetail() {
 
     return sections;
   }, [
-    project.id,
-    project.kind,
-    project.detail,
-    project.detail?.overview?.title,
-    project.detail?.designLeadIn?.title,
-    project.detail?.prototypeFlows,
-    project.detail?.prototypeFlows?.title,
-    project.detail?.conceptRationale?.title,
-    project.detail?.finalResult?.title,
+    project?.id,
+    project?.kind,
+    project?.detail,
+    project?.detail?.overview?.title,
+    project?.detail?.designLeadIn?.title,
+    project?.detail?.prototypeFlows,
+    project?.detail?.prototypeFlows?.title,
+    project?.detail?.conceptRationale?.title,
+    project?.detail?.finalResult?.title,
   ]);
+
+  useEffect(() => {
+    if (!project) {
+      applySeo({
+        title: "Project not found",
+        description: "This portfolio project does not exist or has been moved.",
+        noIndex: true,
+      });
+      return;
+    }
+
+    const overviewText = project.detail?.overview?.text;
+    let description = DEFAULT_DESCRIPTION;
+    if (overviewText && typeof overviewText === "string") {
+      const flat = overviewText.replace(/\s+/g, " ").trim();
+      description = flat.length > 160 ? `${flat.slice(0, 157)}…` : flat;
+    } else {
+      const labels = getCardCategoryLabels(project);
+      description = `${project.title.replace(/\s+/g, " ")} — ${labels.join(", ")} · Portfolio work by Samuel Chua.`;
+    }
+
+    const imageUrl =
+      project.image && typeof project.image === "string"
+        ? project.image.startsWith("http")
+          ? project.image
+          : `${getSiteOrigin()}${project.image.startsWith("/") ? "" : "/"}${project.image}`
+        : undefined;
+
+    applySeo({
+      title: project.title,
+      description,
+      pathname: `/portfolio/${project.id}`,
+      image: imageUrl,
+      ogType: project.kind === "case-study" ? "article" : "website",
+    });
+  }, [project, projectId]);
+
+  if (!project) {
+    return (
+      <div className="portfolio-detail">
+        <div className="portfolio-detail__inner">
+          <h1 className="portfolio-detail__title">Project not found</h1>
+          <p className="portfolio-detail__text">
+            The project you are looking for does not exist or has moved.
+          </p>
+          <Link to="/#portfolio" className="portfolio-detail__back-link">
+            Back to portfolio
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const isCaseStudy = project.kind === "case-study";
 
   return (
     <div
